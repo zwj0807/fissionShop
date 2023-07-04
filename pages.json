@@ -1,0 +1,85 @@
+{
+	"easycom": {
+		"^u-(.*)": "uview-ui/components/u-$1/u-$1.vue"
+	},
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "首页",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/subPackageOne/index",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
+			"path": "pages/my/index",
+			"style": {
+				"navigationBarTitleText": "我的",
+				"navigationStyle": "custom"
+			}
+		}
+	],
+	"subPackages": [{
+		"root": "subPackageOne", //子包的根目录
+		"pages": [{ //这里的配置路径和pages里的一样
+				"path": "index", //配置页面路径，这里要注意，因为root已经选中了文件夹，所以我们只要填写文件名就好
+				"style": {
+					"navigationBarTitleText": "tabar1",
+					"enablePullDownRefresh": false
+				}
+			}
+		]
+	},{
+		"root": "my", //子包的根目录
+		"pages": [{ //这里的配置路径和pages里的一样
+				"path": "index", //配置页面路径，这里要注意，因为root已经选中了文件夹，所以我们只要填写文件名就好
+				"style": {
+					"navigationBarTitleText": "tabar2",
+					"enablePullDownRefresh": false
+				}
+			}
+		]
+	}
+	],
+		
+	"tabBar": {
+		"height": "48px",
+		"fontSize": "10px",
+		"spacing": "1px",
+		"iconWidth": "24px",
+		"color": "#111111",
+		"selectedColor": "#FF5D31",
+		"backgroundColor": "#ffffff",
+		"list": [{
+				"pagePath": "pages/index/index",
+				"text": "首页",
+				"iconPath": "/static/home_unselected.png",
+				"selectedIconPath": "/static/home_selected.png"
+			},
+			{
+				"pagePath": "pages/subPackageOne/index",
+				"text": "红包",
+				"iconPath": "/static/home_unselected.png",
+				"selectedIconPath": "/static/home_selected.png"
+			},
+			{
+				"pagePath": "pages/my/index",
+				"text": "我的",
+				"iconPath": "/static/home_unselected.png",
+				"selectedIconPath": "/static/home_selected.png"
+			}
+		]
+	},
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "aquarium",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#ffffff"
+	},
+	"uniIdRouter": {}
+}
