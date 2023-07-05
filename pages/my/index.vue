@@ -12,14 +12,14 @@
 		<view class="order_box">
 			<view class="order_title_line">
 				<view class="order_title">我的订单</view>
-				<view class="order_all">查看全部 > </view>
+				<view class="order_all" @click="goOrder(0)">查看全部 > </view>
 			</view>
 			<view class="order_state">
-				<view class="state_item">
+				<view class="state_item" @click="goOrder(1)">
 					<view class=""><u-icon name="bag" size="60" color="#df464b"></u-icon></view>
 					<view class="txt">待自提</view>
 				</view>
-				<view class="state_item">
+				<view class="state_item" @click="goOrder(2)">
 					<view class=""><u-icon name="order" size="60" color="#df464b"></u-icon></view>
 					<view class="txt">已完成</view>
 				</view>
@@ -32,6 +32,31 @@
 				<text style="font-size: 22rpx; color: #b9374b;margin-left: 15rpx;">正在变大...</text>
 				<view class="withdraw">去提现</view>
 			</view>
+			<view class="activity_text">
+				活动还有01天12小时29分34秒04结束
+			</view>
+		</view>
+		<view class="record">
+			<view class="record_item">
+				<u-icon name="file-text-fill" size="70" color="#ee9a3a"></u-icon>
+				<view class="txt">邀请记录</view>
+			</view>
+			<view class="record_item">
+				<u-icon name="file-text" size="70" color="#ee9a3a"></u-icon>
+				<view class="txt">红包记录</view>
+			</view>
+			<view class="record_item">
+				<u-icon name="red-packet-fill" size="70" color="#ee9a3a"></u-icon>
+				<view class="txt">提现记录</view>
+			</view>
+			<view class="record_item">
+				<u-icon name="moments" size="70" color="#ee9a3a"></u-icon>
+				<view class="txt">分享朋友圈</view>
+			</view>
+		</view>
+		<view class="menu" :class="{'menu_top': index>0 }" v-for="(item,index) in list" :key="index">
+			<view class="txt">{{item.name}}</view>
+			<view class="icon"><u-icon name="arrow-right" size="30"></u-icon></view>
 		</view>
 	</view>
 </template>
@@ -40,14 +65,39 @@
 	export default {
 		data() {
 			return {
-				
+				list:[
+					{
+						name:'切换店铺',
+						url:''
+					},
+					{
+						name:'红包攻略',
+						url:''
+					},
+					{
+						name:'投诉和建议',
+						url:''
+					},
+					{
+						name:'绑定手机号',
+						url:''
+					},
+					{
+						name:'设置',
+						url:''
+					}
+				]
 			}
 		},
 		onLoad() {
 
 		},
 		methods: {
-
+			goOrder(index){
+				uni.navigateTo({
+					url: `/my/order?type=${index}`
+				})
+			}
 		}
 	}
 </script>
@@ -153,5 +203,48 @@
 			color: #b9374b;
 		}
 	}
+	.activity_text{
+		margin-top: 10rpx;
+		text-align: center;
+		font-size: 30rpx;
+		color: #ececec;
+	}
+}
+.record{
+	height: 195rpx;
+	background-color: #fff;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 24rpx;
+	.record_item{
+		width: 135rpx;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		margin: 0 30rpx;
+		.txt{
+			width: 100%;
+			font-size: 26rpx;
+			color: #626262;
+			text-align: center;
+		}
+	}
+}
+.menu{
+	height: 110rpx;
+	background-color: #fff;
+	padding: 0 24rpx;
+	box-sizing: border-box;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	.txt{
+		color: #292929;
+		font-size: 30rpx;
+	}
+}
+.menu_top{
+	border-top: 1rpx solid #eeeeee;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-	<view>
+	<view :class="{popupShow:adShow}">
 		<view style="height: 168rpx;">
 			<view class="nav_top">
 				<view class="text">云紫妈妈孕产调理中心</view>
@@ -123,11 +123,49 @@
 			<view class="box"><u-icon name="kefu-ermai" size="40" color="#fff"></u-icon></view>
 			<view class="txt">客服</view>
 		</view>
+		<!-- 大转盘 -->
+		<view>
+			<u-popup :show="adShow" :customStyle="{overflow: 'hidden'}" round="15" mode="center" bgColor="transparent"  :closeOnClickOverlay="false" :safeAreaInsetBottom="false">
+			    <view class="ad_box">
+			        <view class="ad_title">送你一个1-120的现金红包</view>
+					<view class="wheel_main">
+						<view class="wheel_box">
+							<LuckyWheel
+							      ref="myLucky"
+							      width="490rpx"
+							      height="490rpx"
+							      :blocks="blocks"
+							      :prizes="prizes"
+							      :buttons="buttons"
+							      @start="startCallBack"
+							      @end="endCallBack"
+							    />
+						</view>
+						<view class="button" @click="startCallBack">试试手气</view>
+					</view>
+			    </view>
+			</u-popup>
+		</view>
+		<view>
+			<u-popup :show="winShow" :customStyle="{overflow: 'hidden'}" round="15" mode="center" :closeOnClickOverlay="false" @close="close">
+				<view class="win_box" >
+					<view class="win_title">恭喜！获得现金奖励</view>
+					<view class="win_txt">100<text>元</text></view>
+					<view class="submit_button" @click="adopt">
+						领取
+					</view>
+				</view>
+			</u-popup>
+		</view>
 	</view>
 </template>
 
 <script>
+	import LuckyWheel from '@lucky-canvas/uni/lucky-wheel' // 大转盘
 	export default {
+		components:{
+			LuckyWheel
+		},
 		data() {
 			return {
 				list2: [{
@@ -142,7 +180,27 @@
 						path: '/pages/index/index',    // 全局分享的路径
 						imageUrl:'',    // 全局分享的图片
 						desc: '分享的描述'
-					}
+					},
+					adShow:true,
+					winShow:false,
+					blocks: [{ padding: '10rpx', background: '#b41c1b' }],
+					prizes: [
+					  { fonts: [{ text: '0元现金', top: '10%' }], background: '#e8e8e8' },
+					  { fonts: [{ text: '1元现金', top: '10%' }], background: '#fefefe' },
+					  { fonts: [{ text: '2元现金', top: '10%' }], background: '#e8e8e8' },
+					  { fonts: [{ text: '3元现金', top: '10%' }], background: '#fefefe' },
+					  { fonts: [{ text: '4元现金', top: '10%' }], background: '#e8e8e8' },
+					  { fonts: [{ text: '5元现金', top: '10%' }], background: '#fefefe' },
+					],
+					buttons: [
+					  { radius: '80rpx', background: '#b80100' },
+					  { radius: '80rpx', background: '#f33213' },
+					  {
+					    radius: '60rpx', background: '#c0201d',
+					    pointer: true,
+					    fonts: [{ text: '开始\n抽奖',fontColor:'#fff',fontSize:'26rpx', top: '-30rpx' }]
+					  },
+					],
 			}
 		},
 		onLoad() {
@@ -161,6 +219,27 @@
 					url: '/pages/my/index'
 				});
 			},
+			startCallBack () {
+			  // 先开始旋转
+			  this.$refs.myLucky.play()
+			  // 使用定时器来模拟请求接口
+			  setTimeout(() => {
+			    // 假设后端返回的中奖索引是0
+			    const index = 0
+			    // 调用stop停止旋转并传递中奖索引
+			    this.$refs.myLucky.stop(index)
+			  }, 1000)
+			},
+			// 抽奖结束触发回调
+			endCallBack (prize) {
+			  // 奖品详情
+			  console.log(prize)
+			  this.winShow=true
+			},
+			adopt(){
+				this.winShow = false
+				this.adShow =false
+			}
 			
 		}
 	}
@@ -594,5 +673,93 @@
 		color:#fff;
 		font-size: 18rpx;
 	}
+}
+
+.ad_box{
+	width: 700rpx;
+	height: 850rpx;
+	// background-color: #d22c42;
+	.ad_title{
+		height: 115rpx;
+		font-size: 40rpx;
+		border-radius: 15rpx;
+		color: #fff;
+		font-weight: 600;
+		text-align: center;
+		line-height: 115rpx;
+		background-image: linear-gradient(to right,#ff6e5b,#f9425c);
+	}
+	.wheel_main{
+		width: 650rpx;
+		height: 735rpx;
+		background-color: #e33348;
+		border-radius: 0 0 20rpx 20rpx;
+		margin: 0 auto;
+		overflow: hidden;
+		.wheel_box{
+			width: 570rpx;
+			height: 570rpx;
+			background-color: #d22c42;
+			border-radius: 15rpx;
+			margin: 30rpx auto 0 auto;
+			padding: 50rpx 0 0 0;
+			box-sizing: border-box;
+		}
+		.button{
+			width: 365rpx;
+			height: 74rpx;
+			margin: 30rpx auto;
+			color: #e5001b;
+			font-weight: 700;
+			border-radius: 74rpx;
+			background-image: linear-gradient(to bottom,#ffd89d,#faab5e);
+			line-height: 74rpx;
+			text-align: center;
+			font-size: 38rpx;
+		}
+		.button:active{
+			filter: brightness(80%);
+		}
+	}
+}
+.win_box{
+	width: 500rpx;
+	height: 400rpx;
+	.win_title{
+		height: 100rpx;
+		color: #dc4d47;
+		text-align: center;
+		font-size: 45rpx;
+		line-height: 100rpx;
+		border-bottom: 1rpx solid #f5ebef;
+	}
+	.win_txt{
+		height: 220rpx;
+		color: #e3512b;
+		font-size: 100rpx;
+		line-height: 220rpx;
+		text-align: center;
+		font-weight: 600;
+		text{
+			font-size: 36rpx;
+		}
+	}
+	.submit_button{
+		width: 300rpx;
+		height: 90rpx;
+		line-height: 90rpx;
+		text-align: center;
+		color: #f6d5a2;
+		font-size: 40rpx;
+		background-color: #ff2f66;
+		border-radius: 90rpx;
+		font-weight: 600;
+		margin: 0 auto;
+	}
+}
+.popupShow {
+	overflow: hidden;
+	position: fixed;
+	width: 100%;
 }
 </style>

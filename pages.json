@@ -11,9 +11,15 @@
 			}
 		},
 		{
-			"path": "pages/subPackageOne/index",
+			"path": "pages/red/index",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "我的红包"
+			}
+		},
+		{
+			"path": "pages/share/index",
+			"style": {
+				"navigationBarTitleText": "分享赚"
 			}
 		},
 		{
@@ -25,7 +31,7 @@
 		}
 	],
 	"subPackages": [{
-		"root": "subPackageOne", //子包的根目录
+		"root": "red", //子包的根目录
 		"pages": [{ //这里的配置路径和pages里的一样
 				"path": "index", //配置页面路径，这里要注意，因为root已经选中了文件夹，所以我们只要填写文件名就好
 				"style": {
@@ -37,10 +43,12 @@
 	},{
 		"root": "my", //子包的根目录
 		"pages": [{ //这里的配置路径和pages里的一样
-				"path": "index", //配置页面路径，这里要注意，因为root已经选中了文件夹，所以我们只要填写文件名就好
+				"path": "order", //配置页面路径，这里要注意，因为root已经选中了文件夹，所以我们只要填写文件名就好
 				"style": {
-					"navigationBarTitleText": "tabar2",
-					"enablePullDownRefresh": false
+					"navigationBarTitleText": "我的订单",
+					"enablePullDownRefresh": false,
+					"navigationBarBackgroundColor": "#e47849"
+					
 				}
 			}
 		]
@@ -58,20 +66,26 @@
 		"list": [{
 				"pagePath": "pages/index/index",
 				"text": "首页",
-				"iconPath": "/static/home_unselected.png",
-				"selectedIconPath": "/static/home_selected.png"
+				"iconPath": "/static/tabbar/home_unselected.png",
+				"selectedIconPath": "/static/tabbar/home_selected.png"
 			},
 			{
-				"pagePath": "pages/subPackageOne/index",
+				"pagePath": "pages/red/index",
 				"text": "红包",
-				"iconPath": "/static/home_unselected.png",
-				"selectedIconPath": "/static/home_selected.png"
+				"iconPath": "/static/tabbar/red_unselected.png",
+				"selectedIconPath": "/static/tabbar/red_selected.png"
+			},
+			{
+				"pagePath": "pages/share/index",
+				"text": "分享赚",
+				"iconPath": "/static/tabbar/share_unselected.png",
+				"selectedIconPath": "/static/tabbar/share_selected.png"
 			},
 			{
 				"pagePath": "pages/my/index",
 				"text": "我的",
-				"iconPath": "/static/home_unselected.png",
-				"selectedIconPath": "/static/home_selected.png"
+				"iconPath": "/static/tabbar/my_unselected.png",
+				"selectedIconPath": "/static/tabbar/my_selected.png"
 			}
 		]
 	},
