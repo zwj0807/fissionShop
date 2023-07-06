@@ -1,6 +1,70 @@
 <template>
 	<view>
-		<u-button text="月升"></u-button>
+		<view class="bg">
+			<view class="red_top_box">
+				<image class="head_box" src="../../static/touxinag_demo.jpg"></image>
+				<view class="withdraw">提现</view>
+				<view class="my_money" >我的金额</view>
+				<view class="money_txt"><text>￥</text>{{120.00}}</view>
+				<view class="progress_box">
+					<view class="progress_top_txt">
+						<view>0</view>
+						<view>200</view>
+					</view>
+					<view class="progress">
+						<u-line-progress :percentage="percentage" height="25rpx" :showText="false" activeColor="#f6cb57" inactiveColor="#a5231a"></u-line-progress>
+					</view>
+				</view>
+				<view class="rule">满200元即可提现</view>
+				<view class="red_button">让红包变大</view>
+			</view>
+			<view class="red_list_box">
+				<view class="title">红包排行榜</view>
+				<view class="item_box oneself">
+					<view class="icon"><u-icon name="gift-fill" color="#f8d950" size="50"></u-icon></view>
+					<image class="head" src="../../static/touxinag_demo.jpg"></image>
+					<view class="info">
+						<view class="name">葫芦小金刚</view>
+						<view class="ranking">第28名</view>
+					</view>
+					<view class="money_box">
+						120元
+						<view class="money_icon">
+							<u-icon name="rmb-circle" color="#f7d458" size="50"></u-icon>
+						</view>
+					</view>
+				</view>
+				<view style="height: 805rpx; overflow-y: auto;">
+					<view class="item_box " :class="{'top_line': index > 0}" v-for="(item,index) in list" :key="index">
+						<view class="icon">{{index+1}}</view>
+						<image class="head" :src="item.img"></image>
+						<view class="info">
+							<view class="name">{{item.name}}</view>
+						</view>
+						<view class="money_box">
+							{{item.num}}元
+							<view class="money_icon">
+								<u-icon name="rmb-circle" color="#f7d458" size="50"></u-icon>
+							</view>
+						</view>
+					</view>
+				</view>
+			</view>
+			<view class="merchant">
+				<view class="merchant_title">红包提供方</view>
+				<view class="merchant_box">
+					<image class="merchant_img" src="../../static/touxinag_demo.jpg"></image>
+					<view class="merchant_info">
+						<view class="name">云紫妈妈孕产调理中心</view>
+						<view class="address">山东省青岛市李沧区</view>
+					</view>
+					<view class="line"></view>
+					<view class="phone" @click="callPhone('13371480807')">
+						<u-icon name="phone-fill" size="60" color="#f7f7f7"></u-icon>
+					</view>
+				</view>
+			</view>
+		</view>
 	</view>
 </template>
 
@@ -8,20 +72,314 @@
 	export default {
 		data() {
 			return {
-				
+				list:[
+					{name:'春暖花开',img:'../../static/touxinag_demo.jpg',num:120},
+					{name:'春暖花开',img:'../../static/touxinag_demo.jpg',num:120},
+					{name:'春暖花开',img:'../../static/touxinag_demo.jpg',num:120},
+					{name:'春暖花开',img:'../../static/touxinag_demo.jpg',num:120},
+					{name:'春暖花开',img:'../../static/touxinag_demo.jpg',num:120},
+					{name:'春暖花开',img:'../../static/touxinag_demo.jpg',num:120},
+					{name:'春暖花开',img:'../../static/touxinag_demo.jpg',num:120},
+					{name:'春暖花开',img:'../../static/touxinag_demo.jpg',num:120},
+					{name:'春暖花开',img:'../../static/touxinag_demo.jpg',num:120},
+					{name:'春暖花开',img:'../../static/touxinag_demo.jpg',num:120},
+				]
 			}
 		},
 		onLoad() {
 
 		},
+		computed:{
+			percentage(){
+				return 120 / 200 * 100
+			}
+		},
 		methods: {
-
+			callPhone(item){
+				let phone = item; // 需要拨打的电话号码
+				console.log('拨打电话', phone)
+				const res = uni.getSystemInfoSync();
+				// ios系统默认有个模态框
+				if (res.platform == 'ios') {
+					 uni.makePhoneCall({
+						phoneNumber: phone,
+						success() {
+							console.log('ios拨打成功了');
+						},
+						fail() {
+							console.log('ios拨打失败了');
+						}
+					})
+				} else {
+					//安卓手机手动设置一个showActionSheet
+					uni.showActionSheet({
+						itemList: [phone, '呼叫'],
+						success: function(res) {
+							console.log(res);
+							if (res.tapIndex == 1) {
+								uni.makePhoneCall({
+									phoneNumber: phone,
+									success() {
+										console.log('安卓拨打成功了');
+									},
+									fail() {
+										console.log('安卓拨打失败了');
+									}
+								})
+							}
+						}
+					})
+				}
+			},
 		}
 	}
 </script>
 
-<style>
+<style lang="scss" scoped>
+.bg{
+	width: 100%;
+	height: 2674rpx;
+	background: url('https://www.jumidongli.com/template/pc/static/demoImg/fissionShop/redhot_bg.png') no-repeat;
+	background-size: 100% 100%;
+	.red_top_box{
+		height: 920rpx;
+		position: relative;
+		.head_box{
+			width: 82rpx;
+			height: 82rpx;
+			border-radius: 50%;
+			border: 5rpx solid #fff;
+			overflow: hidden;
+			margin-top: 228rpx;
+			margin-left: 50%;
+			transform: translateX(-50%);
+		}
+		.withdraw{
+			width: 90rpx;
+			height: 48rpx;
+			background-color: #f3e1cf;
+			border-radius: 48rpx 0 0 48rpx;
+			text-align: center;
+			line-height: 48rpx;
+			color: #894807;
+			font-size: 26rpx;
+			position: absolute;
+			top: 290rpx;
+			right: 167rpx;
+		}
+		.my_money{
+			font-size: 24rpx;
+			font-weight: 500;
+			text-align: center;
+			margin-top: 14rpx;
+		}
+		.money_txt{
+			font-size: 70rpx;
+			color: #c34438;
+			text-align: center;
+			margin-top: 28rpx;
+			font-weight: 600;
+			text{
+				font-size: 40rpx;
+				margin-right: 10rpx;
+			}
+		}
+		.progress_box{
+			width: 518rpx;
+			height: 104rpx;
+			margin: 160rpx auto 0 auto;
+			.progress_top_txt{
+				width: 408rpx;
+				margin: 0 auto;
+				color: #fff;
+				font-size: 22rpx;
+				display: flex;
+				justify-content: space-between;
+			}
+			.progress{
+				width: 450rpx;
+				
+				margin: 20rpx auto ;
+			}
+		}
+		.rule{
+			text-align: center;
+			color: #f3f3f3;
+			font-size: 25rpx;
+		}
+		.red_button{
+			width: 360rpx;
+			height: 74rpx;
+			border-radius: 74rpx;
+			background-color: #f7cf64;
+			color: #e93230;
+			font-size: 30rpx;
+			font-weight: 600;
+			line-height: 74rpx;
+			text-align: center;
+			margin: 25rpx auto;
+			animation: heartbeat 2.5s ease-in-out infinite both;
+		}
+	}
+	.red_list_box{
+		height: 1055rpx;
+		margin-top: 210rpx;
+		.title{
+			width: 80%;
+			height: 100rpx;
+			text-align: center;
+			color: #fffeba;
+			font-size: 36rpx;
+			line-height: 100rpx;
+			margin: 0 auto;
+			border-bottom: 1rpx solid #fffeba;
+		}
 
-
+		.item_box{
+			width: 690rpx;
+			height: 100rpx;
+			border-radius: 20rpx;
+			background-color: rgba(255, 255, 255, .2);
+			margin: 0 auto;
+			display: flex;
+			align-items: center;
+			.icon{
+				width: 52rpx;
+				margin-left: 50rpx;
+				color: #562116;
+				text-align: center;
+			}
+			.head{
+				width: 60rpx;
+				height: 60rpx;
+				border-radius: 50%;
+				margin: 0 25rpx;
+				overflow: hidden;
+			}
+			.info{
+				width: 250rpx;
+				.name{
+					font-size: 24rpx;
+					color: #562116;
+				}
+				.ranking{
+					color: #894a3b;
+					font-size: 19rpx;
+					margin-top: 10rpx;
+				}
+			}
+			.money_box{
+				width: 180rpx;
+				height: 50rpx;
+				border-radius: 50rpx;
+				background-color: #eb5053;
+				font-size: 24rpx;
+				color: #f3cbc2;
+				text-align: center;
+				line-height: 50rpx;
+				margin-left: 25rpx;
+				position: relative;
+				.money_icon{
+					width: 50rpx;
+					height: 50rpx;
+					position: absolute;
+					top: 0;
+					left: -20rpx;
+				}
+			}
+		}
+		.oneself{
+			margin-top: 20rpx;
+			margin-bottom: 30rpx;
+			.icon{
+				margin-left: 50rpx;
+			}
+			
+		}
+		.top_line{
+			border-top: 1rpx solid #edafab;
+			margin-top: 10rpx;
+		}
+		.no_radius{
+			border-radius: 0;
+		}
+	}
+	.merchant{
+		.merchant_title{
+			font-size: 22rpx;
+			color: #f3ca99;
+			height: 60rpx;
+			line-height: 60rpx;
+			text-align: center;
+		}
+		.merchant_box{
+			width: 690rpx;
+			height: 160rpx;
+			margin: 20rpx auto 0 auto;
+			border-radius: 20rpx;
+			background-color: rgba(255, 255, 255, .2);
+			display: flex;
+			align-items: center;
+			.merchant_img{
+				width: 100rpx;
+				height: 100rpx;
+				border-radius: 5rpx;
+				margin-left: 20rpx;
+				
+			}
+			.merchant_info{
+				width: 450rpx;
+				margin-left: 20rpx;
+				.name{
+					color: #fae8ac;
+					font-size: 27rpx;
+				}
+				.address{
+					height:55rpx;
+					margin-top: 16rpx;
+					color: #fae8ac;
+					font-size: 22rpx;
+					 word-break: break-all;
+					  text-overflow: ellipsis;
+					  display: -webkit-box;
+					  -webkit-box-orient: vertical;
+					  -webkit-line-clamp: 2; /* 超出几行省略 */
+					  overflow: hidden;
+				}
+			}
+			.line{
+				width: 1rpx;
+				height: 60rpx;
+				border-right: 1rpx solid #fae8ac;
+			}
+			.phone{
+				    margin-left: 15rpx;
+			}
+		}
+	}
+}
+@keyframes heartbeat {
+	from {
+			transform: scale(1);
+			transform-origin: center center;
+			animation-timing-function: ease-out;
+	}
+	10% {
+			transform: scale(0.91);
+			animation-timing-function: ease-in;
+	}
+	17% {
+			transform: scale(0.98);
+			animation-timing-function: ease-out;
+	}
+	33% {
+			transform: scale(0.87);
+			animation-timing-function: ease-in;
+	}
+	45% {
+			transform: scale(1);
+			animation-timing-function: ease-out;
+	}
+}
 
 </style>
