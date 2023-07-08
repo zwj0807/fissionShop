@@ -32,7 +32,7 @@
 				<view class="box_one_info">
 					已是最低家￥199
 				</view>
-				<view class="right_text">低价抢购</view>
+				<view class="right_text">限时抢购</view>
 			</view>
 			<view class="box_two">
 				<view class="icon"><u-icon name="red-packet-fill" size="40" color="#efa492"></u-icon></view>
@@ -81,7 +81,7 @@
 					<view class="address_name"><u-icon name="map-fill" size="20" color="#8a8a88"></u-icon>定陶区复兴大道中央新城 北区南门东30米</view>
 				</view>
 				<view class="cut_line"></view>
-				<view style="margin-left: 30rpx;">
+				<view style="margin-left: 30rpx;"  @click="callPhone('13371440807')">
 					<u-icon name="phone-fill" size="40" color="#8a8a88"></u-icon>
 				</view>
 				
@@ -94,11 +94,11 @@
 		<view style="height: 110rpx;">
 			<view class="tabbar_box">
 				<view class="tabar_left">
-					<view class="fun_box">
+					<view class="fun_box" @click="goRed">
 						<view><u-icon name="red-packet" size="40" color="#c3c3c3"></u-icon></view>
 						<view class="text">红包</view>
 					</view>
-					<view class="fun_box center">
+					<view class="fun_box center" @click="goShare">
 						<view><u-icon name="share" size="40" color="#c3c3c3"></u-icon></view>
 						<view class="text">分享赚</view>
 					</view>
@@ -107,9 +107,10 @@
 						<view class="text">我的</view>
 					</view>
 				</view>
-				<view class="tabar_right">
+				<view class="tabar_right" @click="immediately">
 					立即购买
 				</view>
+				<view class="tabar_tips">首次下单返<text style="color: #ec6238;">{{50}}</text>元</view>
 			</view>
 		</view>
 		<button open-type="share">
@@ -181,7 +182,7 @@
 						imageUrl:'',    // 全局分享的图片
 						desc: '分享的描述'
 					},
-					adShow:true,
+					adShow:false,
 					winShow:false,
 					blocks: [{ padding: '10rpx', background: '#b41c1b' }],
 					prizes: [
@@ -203,10 +204,16 @@
 					],
 			}
 		},
-		onLoad() {
-			
+		onLoad(options) {
+			console.log('来自庄庄的分享',options)
 		},
-
+		onShareAppMessage(res) {
+		    return {
+		      title: '商美裂变小程序',
+		      path: `/pages/index/index?id=${123456789}`,
+		      // imageUrl: '/static/imgs/mylogo.png'
+		    }
+		},
 		onShow() {
 			uni.hideTabBar()
 		},
@@ -239,6 +246,57 @@
 			adopt(){
 				this.winShow = false
 				this.adShow =false
+			},
+			goRed(){
+				uni.switchTab({
+					url:'/pages/red/index'
+				})
+			},
+			goShare(){
+				uni.switchTab({
+					url:'/pages/share/index'
+				})
+			},
+			callPhone(item){
+				let phone = item; // 需要拨打的电话号码
+				console.log('拨打电话', phone)
+				const res = uni.getSystemInfoSync();
+				// ios系统默认有个模态框
+				if (res.platform == 'ios') {
+					 uni.makePhoneCall({
+						phoneNumber: phone,
+						success() {
+							console.log('ios拨打成功了');
+						},
+						fail() {
+							console.log('ios拨打失败了');
+						}
+					})
+				} else {
+					//安卓手机手动设置一个showActionSheet
+					uni.showActionSheet({
+						itemList: [phone, '呼叫'],
+						success: function(res) {
+							console.log(res);
+							if (res.tapIndex == 1) {
+								uni.makePhoneCall({
+									phoneNumber: phone,
+									success() {
+										console.log('安卓拨打成功了');
+									},
+									fail() {
+										console.log('安卓拨打失败了');
+									}
+								})
+							}
+						}
+					})
+				}
+			},
+			immediately(){
+				uni.navigateTo({
+					url:'/order/index'
+				})
 			}
 			
 		}
@@ -625,6 +683,31 @@
 		line-height: 110rpx;
 		font-size: 33rpx;
 		text-align: center;
+	}
+	.tabar_tips{
+		width: 230rpx;
+		height: 120rpx;
+		border-radius: 20rpx;
+		background-color: rgba(125,123,110,.5);
+		font-size: 30rpx;
+		line-height: 120rpx;
+		text-align: center;
+		color: #fff;
+		position: absolute;
+		top:-140rpx;
+		right: 32rpx;
+		animation: bounce 1s infinite ;
+	}
+	@keyframes bounce {
+		0%{
+			top:-140rpx;
+		}
+		50%{
+			top:-130rpx;
+		}
+		100%{
+			top: -140rpx;
+		}
 	}
 }
 .right_share{

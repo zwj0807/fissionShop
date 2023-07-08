@@ -14,7 +14,12 @@
 					<view class="goods_name">{{item.name}}</view>
 					<view class="goods_time">{{item.time}}</view>
 				</view>
-				<view class="state">{{item.state}}</view>
+				<view>
+					<view class="state">{{item.state}}</view>
+					<view class="num">数量:{{item.num}}</view>
+				</view>
+				<view class="check_code" @click="copyExpressNo('123456798854')"><text style="margin-right: 15rpx;">核销码：{{123456798854}}</text> <u-icon  size="35" color="#ccc" name="order" ></u-icon></view>
+				<view class="buy_num">￥{{100}}元</view>
 			</view>
 		</view>
 	</view>
@@ -38,12 +43,14 @@
 						name:'体浮泥化妆品1',
 						img: '../static/touxinag_demo.jpg',
 						time:'06-17 14:30:05',
-						state:'待自提'
+						state:'待自提',
+						num:1
 					},{	
 						name:'体浮泥化妆品2',
 						img: '../static/touxinag_demo.jpg',
 						time:'06-17 14:30:05',
-						state:'待自提'
+						state:'待自提',
+						num:1
 					}
 				],
 				current:0
@@ -55,7 +62,20 @@
 		methods: {
 			sectionChange(index){
 				this.current=index
-			}
+			},
+			copyExpressNo(no) {
+				uni.setClipboardData({
+					data: no,
+					success: () => {
+						uni.hideToast()
+						uni.getClipboardData({
+							success: (res) => {
+								this.$util.toast("复制成功")
+							},
+						})
+					}
+				});
+			},
 		}
 	}
 </script>
@@ -69,14 +89,15 @@
 }
 .order_box{
 	width: 686rpx;
-	height: 150rpx;
+	height: 210rpx;
 	background-color: #fff;
 	border-radius: 20rpx;
 	margin: 25rpx auto 0 auto;
 	display: flex;
-	align-items: center;
-	padding: 0 24rpx;
+	// align-items: center;
+	padding: 20rpx 24rpx;
 	box-sizing: border-box;
+	flex-wrap: wrap;
 	.img{
 		width: 110rpx;
 		height: 110rpx;
@@ -94,9 +115,29 @@
 		margin-left: 25rpx;
 	}
 	.state{
-		margin: 84rpx 0 0 95rpx;
+		margin: 0rpx 0 0 95rpx;
 		font-size: 28rpx;
 		color: #f3a633;
+	}
+	.num{
+		margin-top: 30rpx;
+		font-size: 26rpx;
+		color: #a2a2a2;
+		text-align: right;
+	}
+	.check_code{
+		width: 500rpx;
+		font-size: 29rpx;
+		color: #4b4b4b;
+		display: flex;
+		align-items: center;
+	}
+	.buy_num{
+		font-size: 26rpx;
+		color: #ffab35;
+		margin-top: 10rpx;
+		width: 140rpx;
+		text-align: right;
 	}
 }
 .order_list{

@@ -33,28 +33,16 @@
 				<view class="withdraw">去提现</view>
 			</view>
 			<view class="activity_text">
-				活动还有01天12小时29分34秒04结束
+				活动还有{{oDay}}天{{oHour}}小时{{oMinute}}分{{oSecond}}秒结束
 			</view>
 		</view>
-		<view class="record">
-			<view class="record_item">
-				<u-icon name="file-text-fill" size="70" color="#ee9a3a"></u-icon>
-				<view class="txt">邀请记录</view>
-			</view>
-			<view class="record_item">
-				<u-icon name="file-text" size="70" color="#ee9a3a"></u-icon>
-				<view class="txt">红包记录</view>
-			</view>
-			<view class="record_item">
-				<u-icon name="red-packet-fill" size="70" color="#ee9a3a"></u-icon>
-				<view class="txt">提现记录</view>
-			</view>
-			<view class="record_item">
-				<u-icon name="moments" size="70" color="#ee9a3a"></u-icon>
-				<view class="txt">分享朋友圈</view>
+		<view class="record" >
+			<view class="record_item" v-for="(item,index) in menuList" :key="index" @click="goMenu(item)">
+				<u-icon :name="item.iconName" size="70" color="#ee9a3a"></u-icon>
+				<view class="txt">{{item.name}}</view>
 			</view>
 		</view>
-		<view class="menu" :class="{'menu_top': index>0 }" v-for="(item,index) in list" :key="index">
+		<view class="menu" :class="{'menu_top': index>0 }" v-for="(item,index) in list" :key="index" @click="goPage(item)">
 			<view class="txt">{{item.name}}</view>
 			<view class="icon"><u-icon name="arrow-right" size="30"></u-icon></view>
 		</view>
@@ -68,7 +56,7 @@
 				list:[
 					{
 						name:'切换店铺',
-						url:''
+						url:'/my/changeMerchant'
 					},
 					{
 						name:'红包攻略',
@@ -78,25 +66,105 @@
 						name:'投诉和建议',
 						url:''
 					},
-					{
-						name:'绑定手机号',
-						url:''
-					},
+					// {
+					// 	name:'绑定手机号',
+					// 	url:''
+					// },
 					{
 						name:'设置',
-						url:''
+						url:'setting'
 					}
-				]
+				],
+				menuList:[
+					{
+						name:'邀请记录',
+						url:'/my/inviteRecord',
+						iconName:'file-text-fill',
+						
+					},
+					{
+						name:'红包记录',
+						url:'/my/redRecord',
+						iconName:'file-text',
+						
+					},
+					{
+						name:'提现记录',
+						url:'',
+						iconName:'red-packet-fill',
+						
+					},
+					{
+						name:'分享朋友圈',
+						url:'/my/shareFriend',
+						iconName:'moments',
+						
+					}
+				],
+				oDay:0,
+				oHour:0,
+				oMinute:0,
+				oSecond:0,
 			}
 		},
 		onLoad() {
 
+		},
+		onShow() {
+			this.down()
 		},
 		methods: {
 			goOrder(index){
 				uni.navigateTo({
 					url: `/my/order?type=${index}`
 				})
+			},
+			goMenu(item){
+				uni.navigateTo({
+					url: item.url
+				})
+			},
+			goPage(item){
+				if(item.url=='setting'){
+					uni.openSetting({
+					  success(res) {
+					    console.log(res.authSetting)
+					  }
+					});
+					return false
+				}
+				uni.navigateTo({
+					url: item.url
+				})
+			},
+			down(){
+				setInterval(()=>{
+					this.cutDate('2023/07/10 17:00:00')
+				},1000)
+			},
+			cutDate(time){
+				//当前时间
+				let startTime = new Date();
+				//结束时间
+				let endTime =  new Date(time);
+				//算出中间差，以毫秒数返回.
+				let countDown = (endTime.getTime()-startTime.getTime());
+				//获取天数
+				let oDay = parseInt(countDown/1000/60/60/24) 
+				//获取小时数
+				let oHour = parseInt(countDown/1000/60/60%24);
+				//获取分钟数
+				let oMinute = parseInt(countDown/1000/60%60);
+				//获取秒数
+				let oSecond = parseInt(countDown/1000%60);
+				//输出
+				this.oDay= this.filterNum(oDay)
+				this.oHour= this.filterNum(oHour)
+				this.oMinute= this.filterNum(oMinute)
+				this.oSecond= this.filterNum(oSecond)
+			},
+			filterNum(n){
+			    return n < 10 ?'0'+n :n;
 			}
 		}
 	}

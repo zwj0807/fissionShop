@@ -16,7 +16,7 @@
 					</view>
 				</view>
 				<view class="rule">满200元即可提现</view>
-				<view class="red_button">让红包变大</view>
+				<view class="red_button" @click="goShare">让红包变大</view>
 			</view>
 			<view class="red_list_box">
 				<view class="title">红包排行榜</view>
@@ -59,7 +59,7 @@
 						<view class="address">山东省青岛市李沧区</view>
 					</view>
 					<view class="line"></view>
-					<view class="phone" @click="callPhone('13371480807')">
+					<view class="phone" @click="callPhone('13371440807')">
 						<u-icon name="phone-fill" size="60" color="#f7f7f7"></u-icon>
 					</view>
 				</view>
@@ -95,6 +95,11 @@
 			}
 		},
 		methods: {
+			goShare(){
+				uni.switchTab({
+					url:'/pages/share/index'
+				})
+			},
 			callPhone(item){
 				let phone = item; // 需要拨打的电话号码
 				console.log('拨打电话', phone)

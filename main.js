@@ -5,6 +5,7 @@ import Vue from 'vue'
 import './uni.promisify.adaptor'
 import uView from "uview-ui"
 import store from './store'
+import * as Util from './utils/common.js'
 
 Vue.use(uView)
 uni.$u.setConfig({
@@ -14,6 +15,7 @@ uni.$u.setConfig({
 	},
 })
 
+Vue.prototype.$util = Util;
 Vue.config.productionTip = false
 App.mpType = 'app'
 const app = new Vue({
