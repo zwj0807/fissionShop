@@ -2,7 +2,7 @@
 	<view style="height: 100vh; display: flex; align-items: center;">
 		<!-- 微信授权登陆按钮 -->
 		<view class="button_box">
-			<u-button  type="success" open-type="getPhoneNumber" @getphonenumber="getphoneNumber">用户授权登陆</u-button>
+			<u-button  type="success" open-type="getPhoneNumber" @getphonenumber="getphoneNumber">微信授权登陆</u-button>
 		</view>
 		
 	</view>

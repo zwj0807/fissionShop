@@ -3,7 +3,7 @@
 		<view class="bg">
 			<view class="red_top_box">
 				<image class="head_box" src="../../static/touxinag_demo.jpg"></image>
-				<view class="withdraw">提现</view>
+				<view class="withdraw" @click="goWithdraw">提现</view>
 				<view class="my_money" >我的金额</view>
 				<view class="money_txt"><text>￥</text>{{120.00}}</view>
 				<view class="progress_box">
@@ -18,9 +18,29 @@
 				<view class="rule">满200元即可提现</view>
 				<view class="red_button" @click="goShare">让红包变大</view>
 			</view>
+			<!-- 弹幕滚动前三提现信息 -->
+			<view class="subtitle_box">
+				<view class="subtitle_item item_1">
+					<image class="head" src="../../static/touxinag_demo.jpg"></image>
+					<text class="txt">春暖花开  &nbsp; 又提现了{{400}}元</text>
+				</view>
+				<view class="subtitle_item item_2">
+					<image class="head" src="../../static/touxinag_demo.jpg"></image>
+					<text class="txt">春暖花开  &nbsp; 又提现了{{400}}元</text>
+				</view>
+				<view class="subtitle_item  item_3">
+					<image class="head" src="../../static/touxinag_demo.jpg"></image>
+					<text class="txt">春暖花开  &nbsp; 又提现了{{400}}元</text>
+				</view>
+			</view>
 			<view class="red_list_box">
-				<view class="title">红包排行榜</view>
-				<view class="item_box oneself">
+				<view class="title">
+					<view :class="{'checked_title' : checkedTitleNum!==0}" @click="changeTitle(0)">红包排行榜</view>
+					<view style="background-color: #fffeba; width: 1rpx;height: 40rpx;"></view>
+					<view :class="{'checked_title' : checkedTitleNum!==1}" @click="changeTitle(1)">我的邀请进展</view>
+				</view>
+				<!-- 红包排行 - 自己 -->
+				<view class="item_box oneself" v-if="checkedTitleNum==0">
 					<view class="icon"><u-icon name="gift-fill" color="#f8d950" size="50"></u-icon></view>
 					<image class="head" src="../../static/touxinag_demo.jpg"></image>
 					<view class="info">
@@ -34,7 +54,8 @@
 						</view>
 					</view>
 				</view>
-				<view style="height: 805rpx; overflow-y: auto;">
+				<!-- 红包排行 -->
+				<view style="height: 805rpx; overflow-y: auto;" v-if="checkedTitleNum==0">
 					<view class="item_box " :class="{'top_line': index > 0}" v-for="(item,index) in list" :key="index">
 						<view class="icon">{{index+1}}</view>
 						<image class="head" :src="item.img"></image>
@@ -45,6 +66,22 @@
 							{{item.num}}元
 							<view class="money_icon">
 								<u-icon name="rmb-circle" color="#f7d458" size="50"></u-icon>
+							</view>
+						</view>
+					</view>
+				</view>
+				<!-- 邀请进展 -->
+				<view style="height: 805rpx; overflow-y: auto; margin-top: 20rpx;" v-if="checkedTitleNum==1">
+					<view class="item_box " :class="{'top_line': index > 0}" v-for="(item,index) in list" :key="index">
+						<view class="icon">{{index+1}}</view>
+						<image class="head" :src="item.img"></image>
+						<view class="info">
+							<view class="name">{{item.name}}</view>
+						</view>
+						<view class="money_box">
+							{{'未下单'}}
+							<view class="money_icon">
+								<u-icon name="weixin-circle-fill" color="#f7d458" size="50"></u-icon>
 							</view>
 						</view>
 					</view>
@@ -83,7 +120,8 @@
 					{name:'春暖花开',img:'../../static/touxinag_demo.jpg',num:120},
 					{name:'春暖花开',img:'../../static/touxinag_demo.jpg',num:120},
 					{name:'春暖花开',img:'../../static/touxinag_demo.jpg',num:120},
-				]
+				],
+				checkedTitleNum:0
 			}
 		},
 		onLoad() {
@@ -98,6 +136,11 @@
 			goShare(){
 				uni.switchTab({
 					url:'/pages/share/index'
+				})
+			},
+			goWithdraw(){
+				uni.navigateTo({
+					url:'/other/withdraw/index'
 				})
 			},
 			callPhone(item){
@@ -136,6 +179,9 @@
 					})
 				}
 			},
+			changeTitle(index){
+				this.checkedTitleNum=index
+			}
 		}
 	}
 </script>
@@ -226,18 +272,75 @@
 			animation: heartbeat 2.5s ease-in-out infinite both;
 		}
 	}
+	.subtitle_box{
+		height: 210rpx;
+		// background-color: rgba(163, 255, 65, 0.2);
+		.subtitle_item{
+			box-sizing: border-box;
+			display: inline-flex;
+			align-items: center;
+			padding: 10rpx 32rpx;
+			height: 70rpx;
+			border-radius: 70rpx;
+			background-color: rgba(0, 0, 0, .3);
+			
+			position: relative;
+			top: 0;
+			left: 0;
+			.head{
+				width: 40rpx;
+				height: 40rpx;
+				border-radius: 50%;
+				line-height: 40rpx;
+				overflow: hidden;
+			}
+			.txt{
+				font-size: 24rpx;
+				color: #fff;
+				margin-left: 28rpx;
+			}
+		}
+		.item_1{
+			left:-100%;
+			animation: rowScrollTest 12s linear 0s infinite;
+		}
+		.item_2{
+			left:-100%;
+			animation: rowScrollTest 12s linear 4s infinite;
+		}
+		.item_3{
+			left:-100%;
+			animation: rowScrollTest 12s linear 8s infinite;
+		}
+		@keyframes rowScrollTest {
+			from {
+				left: 100%; 
+			}
+			to {
+				left: -250%; 
+			}
+		}
+	}
 	.red_list_box{
 		height: 1055rpx;
-		margin-top: 210rpx;
+		// margin-top: 210rpx;
 		.title{
 			width: 80%;
 			height: 100rpx;
-			text-align: center;
+			// text-align: center;
 			color: #fffeba;
 			font-size: 36rpx;
 			line-height: 100rpx;
+			font-weight: 600;
 			margin: 0 auto;
 			border-bottom: 1rpx solid #fffeba;
+			display: flex;
+			align-items: center;
+			justify-content: space-around;
+		}
+		.checked_title{
+			color: #d3d29a;
+			font-weight: 500;
 		}
 
 		.item_box{

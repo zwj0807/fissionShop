@@ -2,21 +2,21 @@
 	<view :class="{popupShow:adShow}">
 		<view style="height: 168rpx;">
 			<view class="nav_top">
-				<view class="text">云紫妈妈孕产调理中心</view>
+				<view class="text">{{proInfo.name}}</view>
 			</view>
 		</view>
 		<view class="top_box">
 			<view class="box_bg">
-				<image class="img" src="/static/touxinag_demo.jpg"></image>
+				<image class="img" :src="user.avatar ? user.avatar : '/static/touxiang_demo.png'"></image>
 				<view class="text">我的红包余额：</view>
-				<view class="text_2">120.00元</view>
+				<view class="text_2">{{user.money}}元</view>
 				<view class="text_3">正在变大...</view>
-				<view class="withdraw">去提现</view>
+				<view class="withdraw" @click="goWithdraw(user.withdrawal_amount)">去提现</view>
 			</view>
 		</view>
 		<view class="banner_box">
 			<u-swiper
-			    :list="list2"
+			    :list="proInfo.image"
 				height="730"
 				keyName="image"
 			    :autoplay="false"
@@ -26,35 +26,36 @@
 		<view class="good_box">
 			<view class="box_one">
 				<view class="box_one_price">
-					<text style="font-size: 30rpx;">￥</text><text>{{199}}</text>
-					<view class="or_price"><text>￥</text><text>1555</text></view>
+					<text style="font-size: 30rpx;">￥</text><text>{{proInfo.price}}</text>
+					<view class="or_price"><text>￥</text><text>{{proInfo.original_price}}</text></view>
 				</view>
 				<view class="box_one_info">
-					已是最低家￥199
+					已是最低价￥{{proInfo.price}}
 				</view>
+				<view class="bottom_text">剩余时间: &nbsp; {{dateArr[0]}}天{{dateArr[1]}}小时{{dateArr[2]}}分{{dateArr[3]}}秒</view>
 				<view class="right_text">限时抢购</view>
 			</view>
 			<view class="box_two">
 				<view class="icon"><u-icon name="red-packet-fill" size="40" color="#efa492"></u-icon></view>
-				<view class="text">给2个朋友送红包可立减200</view>
+				<view class="text">给2个朋友送红包可立减{{parseFloat(user.refund_amount) * 2}}</view>
 				
 				<button class="give"  open-type="share"><view class="give" style="right: 0;">送红包</view></button>
 				
 			</view>
 			<view class="box_three">
-				<view class="goods_title">云紫妈妈孕产调理中心</view>
+				<view class="goods_title">{{proInfo.name}}</view>
 				<view class="goods_award">
 					<view style="display: flex; align-items: center;margin: 0 auto;">
 						<u-icon name="bell-fill" size="35" color="#b0762c" ></u-icon>
-						<view class="award_text">您下单后，您的红包将会再次变大为<text style="color: crimson;">150.00元</text></view>
+						<view class="award_text">您下单后，您的红包将会再次变大为<text style="color: crimson;">{{parseFloat(user.refund_amount) + parseFloat(user.money)}}元</text></view>
 					</view>
 				</view>
-				<view class="goods_presenter">
+				<view class="goods_presenter" v-show="proInfo.gift_unit >= 0">
 					<view class="presenter_box">赠送</view>
-					<view class="presenter_text info">前<text style="color: #e23a42;">68</text>名下单赠送兰蔻粉水</view>
-					<view class="presenter_text residue">还剩<text style="color: #e23a42;">51</text>名</view>
+					<view class="presenter_text info">前<text style="color: #e23a42;">{{proInfo.gift_original_quantity}}</text>名下单赠送{{proInfo.gift}}</view>
+					<view class="presenter_text residue">还剩<text style="color: #e23a42;">{{proInfo.gift_unit}}</text>名</view>
 				</view>
-				<view class="goods_remark">温馨提示: 1，本卡限本人使用，一人限购一张; 2，本卡限三个月内使用，一经售出，不退不换;</view>
+				<view class="goods_remark" v-show="proInfo.gift_unit >= 0">温馨提示: {{proInfo.tips}}</view>
 			</view>
 		</view>
 		<view class="friends_box">
@@ -66,7 +67,7 @@
 			</view>
 			<view class="head_box">
 				<view class="head_item_box" v-for="(item,index) in 30" :key="index">
-					<image class="head_img" src="../../static/touxinag_demo.jpg"></image>
+					<image class="head_img" src="../../static/touxinag_demo.png"></image>
 					<view class="head_name">葫芦xiaojingang</view>
 				</view>
 
@@ -75,7 +76,7 @@
 		<view class="merchant_box">
 			<view class="merchant_title">商铺信息</view>
 			<view class="merchant_info">
-				<image class="img" src="../../static/touxinag_demo.jpg"></image>
+				<image class="img" src="../../static/touxinag_demo.png"></image>
 				<view class="merchant_info_name">
 					<view class="info_name">云紫妈妈孕产调理中心</view>
 					<view class="address_name"><u-icon name="map-fill" size="20" color="#8a8a88"></u-icon>定陶区复兴大道中央新城 北区南门东30米</view>
@@ -89,7 +90,7 @@
 		</view>
 		<view class="detail_box">
 			<text class="txt">商品详情</text>
-			<image class="detail_img" mode="widthFix" src="../../static/touxinag_demo.jpg"></image>
+			<image class="detail_img" mode="widthFix" src="../../static/touxinag_demo.png"></image>
 		</view>
 		<view style="height: 110rpx;">
 			<view class="tabbar_box">
@@ -122,7 +123,7 @@
 
 		<view class="right_service">
 			<view class="box"><u-icon name="kefu-ermai" size="40" color="#fff"></u-icon></view>
-			<view class="txt">客服</view>
+			<view class="txt" @click="callPhone('13371440807')">客服</view>
 		</view>
 		<!-- 大转盘 -->
 		<view>
@@ -163,19 +164,13 @@
 
 <script>
 	import LuckyWheel from '@lucky-canvas/uni/lucky-wheel' // 大转盘
+	import { product_details,current_user } from '@/api/index.js'
 	export default {
 		components:{
 			LuckyWheel
 		},
 		data() {
 			return {
-				list2: [{
-						image: 'https://cdn.uviewui.com/uview/swiper/swiper2.png',
-					},{
-						image: 'https://cdn.uviewui.com/uview/swiper/swiper1.png',
-					},{
-						image: 'https://cdn.uviewui.com/uview/swiper/swiper3.png',
-					}],
 					share: {
 						title: '标题',
 						path: '/pages/index/index',    // 全局分享的路径
@@ -202,9 +197,13 @@
 					    fonts: [{ text: '开始\n抽奖',fontColor:'#fff',fontSize:'26rpx', top: '-30rpx' }]
 					  },
 					],
+					dateArr:['00','00','00','00'],
+					proInfo:{}, //产品信息
+					user:{},//当前登录用户信息
 			}
 		},
 		onLoad(options) {
+			this.getUserInfo()
 			console.log('来自庄庄的分享',options)
 		},
 		onShareAppMessage(res) {
@@ -216,11 +215,19 @@
 		},
 		onShow() {
 			uni.hideTabBar()
+			
+			this.getproductDetails()
+			this.down()
 		},
 		onHide() {
 			uni.showTabBar()
 		},
 		methods: {
+			goWithdraw(num){
+				uni.navigateTo({
+					url:'/other/withdraw/index'
+				})
+			},
 			goMy(){
 				uni.switchTab({
 					url: '/pages/my/index'
@@ -295,10 +302,34 @@
 			},
 			immediately(){
 				uni.navigateTo({
-					url:'/order/index'
+					url:'/other/order'
+				})
+			},
+			down(){
+				let timer= setInterval(()=>{
+					this.dateArr= this.$util.cutDownDate('2023/07/10 17:25:00')
+					if(this.dateArr[4]=='-1'){
+						this.dateArr=['00','00','00','00']
+						clearInterval(timer)
+					}
+				},1000)
+			},
+			getproductDetails(){
+				let params={
+					id:1
+				}
+				product_details(params).then(res=>{
+					this.proInfo=res.data
+					this.proInfo.image=this.proInfo.image.split(',')
+					let { allUser, user, is_turntable, shop, service, }=this.proInfo
+					this.user=user
+				})
+			},
+			getUserInfo(){
+				current_user().then(res=>{
+					console.log('current_user',res)
 				})
 			}
-			
 		}
 	}
 </script>
@@ -412,7 +443,7 @@
 			}
 		}
 		.box_one_info{
-			width: 212rpx;
+			min-width: 212rpx;
 			height: 50rpx;
 			border: 1rpx solid #fff;
 			border-radius: 0 50rpx 50rpx 50rpx;
@@ -422,6 +453,14 @@
 			color:#fff;
 			margin-top: 14rpx;
 			margin-left: 50rpx;
+			padding: 0 20rpx;
+		}
+		.bottom_text{
+			font-size: 26rpx;
+			color:#fff;
+			position: absolute;
+			top: 136rpx;
+			right: 77rpx;
 		}
 		.right_text{
 			font-size: 50rpx;
@@ -510,7 +549,7 @@
 				margin-left: 15rpx;
 			}
 			.residue{
-				margin-left: 180rpx;
+				margin-left: 35rpx;
 			}
 		}
 		.goods_remark{

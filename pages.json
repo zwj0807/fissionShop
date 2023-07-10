@@ -44,11 +44,29 @@
 		}
 	],
 	"subPackages": [{
-		"root": "order", //子包的根目录
+		"root": "other", //子包的根目录
 		"pages": [{ //这里的配置路径和pages里的一样
-				"path": "index", //配置页面路径，这里要注意，因为root已经选中了文件夹，所以我们只要填写文件名就好
+				"path": "order", //配置页面路径，这里要注意，因为root已经选中了文件夹，所以我们只要填写文件名就好
 				"style": {
 					"navigationBarTitleText": "确认订单",
+					"enablePullDownRefresh": false,
+					"navigationBarBackgroundColor": "#f13f46",
+					"navigationBarTextStyle":"white"
+				}
+			},
+			{ //这里的配置路径和pages里的一样
+				"path": "withdraw/index", //配置页面路径，这里要注意，因为root已经选中了文件夹，所以我们只要填写文件名就好
+				"style": {
+					"navigationBarTitleText": "提现申请",
+					"enablePullDownRefresh": false,
+					"navigationBarBackgroundColor": "#f13f46",
+					"navigationBarTextStyle":"white"
+				}
+			},
+			{ //这里的配置路径和pages里的一样
+				"path": "withdraw/record", //配置页面路径，这里要注意，因为root已经选中了文件夹，所以我们只要填写文件名就好
+				"style": {
+					"navigationBarTitleText": "提现记录",
 					"enablePullDownRefresh": false,
 					"navigationBarBackgroundColor": "#f13f46",
 					"navigationBarTextStyle":"white"

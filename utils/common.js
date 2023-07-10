@@ -248,3 +248,41 @@ export function formatName(name) {
     }
     return newStr
 }
+
+/**
+ * 根据传入的时间于系统时间的天数倒计时
+ *  @param {String} date 何时结束的时间 1999-01-01 10:00:00
+ *  @return {Array} [天，时，分，秒]
+ */
+export function cutDownDate(date){
+	let arr=[]
+	
+	//当前时间
+	let startTime = new Date();
+	//结束时间
+	let endTime =  new Date(date);
+	//算出中间差，以毫秒数返回.
+	let countDown = (endTime.getTime()-startTime.getTime());
+	
+	//获取天数
+	let oDay = parseInt(countDown/1000/60/60/24) 
+	//获取小时数
+	let oHour = parseInt(countDown/1000/60/60%24);
+	//获取分钟数
+	let oMinute = parseInt(countDown/1000/60%60);
+	//获取秒数
+	let oSecond = parseInt(countDown/1000%60);
+	//输出
+	
+	arr[0]=oDay.toString().padStart("2", "0")
+	arr[1]=oHour.toString().padStart("2", "0")
+	arr[2]=oMinute.toString().padStart("2", "0")
+	arr[3]=oSecond.toString().padStart("2", "0")
+	if(Math.sign(countDown)== -1){
+		arr[4]=['-1']
+		return arr
+	}
+	return arr
+	
+}
+

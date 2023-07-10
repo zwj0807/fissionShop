@@ -30,10 +30,10 @@
 				<text style="font-size: 22rpx; color: #595959;margin-left: 50rpx;">我的红包余额：</text>
 				<text style="font-size: 28rpx; color: #b9374b;margin-left: 14rpx;">120.00元</text>
 				<text style="font-size: 22rpx; color: #b9374b;margin-left: 15rpx;">正在变大...</text>
-				<view class="withdraw">去提现</view>
+				<view class="withdraw" @click="goWithdraw">去提现</view>
 			</view>
 			<view class="activity_text">
-				活动还有{{oDay}}天{{oHour}}小时{{oMinute}}分{{oSecond}}秒结束
+				活动还有{{dateArr[0]}}天{{dateArr[1]}}小时{{dateArr[2]}}分{{dateArr[3]}}秒结束
 			</view>
 		</view>
 		<view class="record" >
@@ -50,6 +50,7 @@
 </template>
 
 <script>
+
 	export default {
 		data() {
 			return {
@@ -90,7 +91,7 @@
 					},
 					{
 						name:'提现记录',
-						url:'',
+						url:'/other/withdraw/record',
 						iconName:'red-packet-fill',
 						
 					},
@@ -101,10 +102,7 @@
 						
 					}
 				],
-				oDay:0,
-				oHour:0,
-				oMinute:0,
-				oSecond:0,
+				dateArr:['00','00','00','00']
 			}
 		},
 		onLoad() {
@@ -124,6 +122,11 @@
 					url: item.url
 				})
 			},
+			goWithdraw(){
+				uni.navigateTo({
+					url:'/other/withdraw/index'
+				})
+			},
 			goPage(item){
 				if(item.url=='setting'){
 					uni.openSetting({
@@ -139,33 +142,10 @@
 			},
 			down(){
 				setInterval(()=>{
-					this.cutDate('2023/07/10 17:00:00')
+					this.dateArr= this.$util.cutDownDate('2023/07/10 17:00:00')
 				},1000)
 			},
-			cutDate(time){
-				//当前时间
-				let startTime = new Date();
-				//结束时间
-				let endTime =  new Date(time);
-				//算出中间差，以毫秒数返回.
-				let countDown = (endTime.getTime()-startTime.getTime());
-				//获取天数
-				let oDay = parseInt(countDown/1000/60/60/24) 
-				//获取小时数
-				let oHour = parseInt(countDown/1000/60/60%24);
-				//获取分钟数
-				let oMinute = parseInt(countDown/1000/60%60);
-				//获取秒数
-				let oSecond = parseInt(countDown/1000%60);
-				//输出
-				this.oDay= this.filterNum(oDay)
-				this.oHour= this.filterNum(oHour)
-				this.oMinute= this.filterNum(oMinute)
-				this.oSecond= this.filterNum(oSecond)
-			},
-			filterNum(n){
-			    return n < 10 ?'0'+n :n;
-			}
+
 		}
 	}
 </script>
