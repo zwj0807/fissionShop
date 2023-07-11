@@ -6,8 +6,8 @@
 			</view>
 		</view>
 		<view class="personage_info">
-			<image class="img" src="../../static/touxinag_demo.jpg"></image>
-			<view class="txt">葫芦小金刚</view>
+			<image class="img" :src=" userInfo.avatar ? userInfo.avatar : '/static/touxinag_demo.jpg'"></image>
+			<view class="txt">{{userInfo.nickname}}</view>
 		</view>
 		<view class="order_box">
 			<view class="order_title_line">
@@ -28,7 +28,7 @@
 		<view class="red_packet">
 			<view class="my_red">
 				<text style="font-size: 22rpx; color: #595959;margin-left: 50rpx;">我的红包余额：</text>
-				<text style="font-size: 28rpx; color: #b9374b;margin-left: 14rpx;">120.00元</text>
+				<text style="font-size: 28rpx; color: #b9374b;margin-left: 14rpx;">{{userInfo.money}}元</text>
 				<text style="font-size: 22rpx; color: #b9374b;margin-left: 15rpx;">正在变大...</text>
 				<view class="withdraw" @click="goWithdraw">去提现</view>
 			</view>
@@ -50,7 +50,8 @@
 </template>
 
 <script>
-
+import { product_details } from '@/api/index.js'
+import { mapGetters } from  'vuex'
 	export default {
 		data() {
 			return {
@@ -102,14 +103,18 @@
 						
 					}
 				],
-				dateArr:['00','00','00','00']
+				dateArr:['00','00','00','00'],
+				proInfo:{}
 			}
 		},
 		onLoad() {
 
 		},
 		onShow() {
-			this.down()
+			this.getproductDetails()
+		},
+		computed:{
+			...mapGetters(['userInfo','proid']),
 		},
 		methods: {
 			goOrder(index){
@@ -128,6 +133,10 @@
 				})
 			},
 			goPage(item){
+				if(item.url==''){
+					this.$util.toast('尽请期待')
+					return false
+				}
 				if(item.url=='setting'){
 					uni.openSetting({
 					  success(res) {
@@ -140,9 +149,24 @@
 					url: item.url
 				})
 			},
+			getproductDetails(){
+				let params={
+					id:this.proid
+				}
+				product_details(params).then(res=>{
+					this.proInfo=res.data
+					if(this.proInfo.limited_status){
+						this.down()
+					}
+				})
+			},
 			down(){
-				setInterval(()=>{
-					this.dateArr= this.$util.cutDownDate('2023/07/10 17:00:00')
+				let timer= setInterval(()=>{
+					this.dateArr= this.$util.cutDownDate(this.$util.parseTime(this.proInfo.limited_time))
+					if(this.dateArr[4]=='-1'){ //倒计时结束
+						this.dateArr=['00','00','00','00','-1']
+						clearInterval(timer)
+					}
 				},1000)
 			},
 

@@ -8,24 +8,26 @@
 		<view class="order_list">
 			<u-empty v-if="dataList.length==0" marginTop="300rpx" mode="list" iconSize="200" textSize="30">
 			</u-empty>
-			<view v-else class="order_box" v-for="(item,index) in dataList" :key="index">
-				<image class="img" :src="item.img"></image>
+			<view v-else class="order_box" v-for="(item,index) in dataList" :key="item.id">
+				<image class="img" :src="item.image.split(',')[0] ? item.image.split(',')[0] : '/static/touxiang_demo.png'"></image>
 				<view style="width: 350rpx;">
-					<view class="goods_name">{{item.name}}</view>
-					<view class="goods_time">{{item.time}}</view>
+					<view class="goods_name">{{item.product_name}}</view>
+					<view class="goods_time">{{item.place_time_text}}</view>
 				</view>
 				<view>
-					<view class="state">{{item.state}}</view>
-					<view class="num">数量:{{item.num}}</view>
+					<view class="state">{{item.status==1 ? '待自提' : item.status==2 ? '已完成': ''}}</view>
+					<view class="num">数量:{{item.product_unit}}</view>
 				</view>
-				<view class="check_code" @click="copyExpressNo('123456798854')"><text style="margin-right: 15rpx;">核销码：{{123456798854}}</text> <u-icon  size="35" color="#ccc" name="order" ></u-icon></view>
-				<view class="buy_num">￥{{100}}元</view>
+				<view class="check_code" @click="copyExpressNo(item.write_off)"><text style="margin-right: 15rpx;">核销码：{{item.write_off}}</text> <u-icon  size="35" color="#ccc" name="order" ></u-icon></view>
+				<view class="buy_num">￥{{item.amount}}元</view>
 			</view>
 		</view>
 	</view>
 </template>
 
 <script>
+	import { ordre_list } from '@/api/index.js'
+	import { mapGetters } from  'vuex'
 	export default {
 		data() {
 			return {
@@ -38,44 +40,53 @@
 					    name: '已完成'
 					}
 				],
-				dataList:[
-					{	
-						name:'体浮泥化妆品1',
-						img: '../static/touxinag_demo.jpg',
-						time:'06-17 14:30:05',
-						state:'待自提',
-						num:1
-					},{	
-						name:'体浮泥化妆品2',
-						img: '../static/touxinag_demo.jpg',
-						time:'06-17 14:30:05',
-						state:'待自提',
-						num:1
-					}
-				],
+				dataList:[ ],
 				current:0
 			}
 		},
-		onLoad() {
-
+		onLoad(option) {
+			if(option){
+				this.current=option.type
+			}
+			if( !uni.getStorageSync('user_info')){
+				uni.reLaunch({
+					url:'/pages/login'
+				})
+			}
+		},
+		onShow() {
+			this.getList()
+		},
+		computed:{
+			...mapGetters(['userInfo','proid']),
 		},
 		methods: {
 			sectionChange(index){
 				this.current=index
+				this.getList()
 			},
 			copyExpressNo(no) {
 				uni.setClipboardData({
 					data: no,
 					success: () => {
 						uni.hideToast()
-						uni.getClipboardData({
-							success: (res) => {
-								this.$util.toast("复制成功")
-							},
-						})
+						// uni.getClipboardData({
+						// 	success: (res) => {
+						// 		this.$util.toast("复制成功11")
+						// 		 uni.hideToast()
+						// 	},
+						// })
 					}
 				});
 			},
+			getList(){
+				let params={
+					status:this.current
+				}
+				ordre_list(params).then(res=>{
+					this.dataList=res.data
+				})
+			}
 		}
 	}
 </script>
@@ -126,7 +137,7 @@
 		text-align: right;
 	}
 	.check_code{
-		width: 500rpx;
+		width: 460rpx;
 		font-size: 29rpx;
 		color: #4b4b4b;
 		display: flex;
@@ -135,7 +146,7 @@
 	.buy_num{
 		font-size: 26rpx;
 		color: #ffab35;
-		margin-top: 10rpx;
+		margin: 10rpx 0 0 32rpx;
 		width: 140rpx;
 		text-align: right;
 	}

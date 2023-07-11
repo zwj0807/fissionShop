@@ -2,7 +2,7 @@
 	<view>
 		<view class="task_box">
 			<view class="task_title">做任务，让红包金额变大</view>
-			<view class="task_detail">已变大{{0}}次，仅需{{999}}元即可提现{{200}}元</view>
+			<view class="task_detail">还差{{saveMoney}}元即可提现{{userInfo.withdrawal_amount}}元</view>
 		</view>
 		<view class="task_item_box">
 			<view class="icon_box">
@@ -37,7 +37,7 @@
 			</view>
 			<view class="button" @click="goshare">去分享</view>
 		</view>
-		<view class="task_item_box">
+		<!-- <view class="task_item_box">
 			<view class="icon_box">
 				<u-icon name="bell-fill" size="50" color="#fbf4f6"></u-icon>
 			</view>
@@ -46,11 +46,12 @@
 				<view class="name_detail">授权一次，可获取一条消息通知，建议勾选总是保持以上选择</view>
 			</view>
 			<view class="button">去授权</view>
-		</view>
+		</view> -->
 	</view>
 </template>
 
 <script>
+	import { mapGetters } from  'vuex'
 	export default {
 		data() {
 			return {
@@ -59,13 +60,24 @@
 		},
 		onShareAppMessage(res) {
 		    return {
-		      title: '商美裂变小程序',
-		      path: `/pages/index/index?id=${123456789}`,
+		      title: '商美A客',
+		      path: `/pages/index/index?id=${1}`,
 		      // imageUrl: '/static/imgs/mylogo.png'
 		    }
 		},
 		onLoad() {
 
+		},
+		computed: {
+			...mapGetters(['userInfo','proid']),
+			saveMoney(){
+				let num = parseFloat(this.userInfo.withdrawal_amount) - parseFloat(this.userInfo.money)
+				if(Math.sign(num)== -1){
+					return 0
+				}else{
+					return num
+				}
+			}
 		},
 		methods: {
 			goBuy(){

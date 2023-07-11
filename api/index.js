@@ -46,3 +46,67 @@ export function current_user(data) {
 		data: data
 	})
 }
+//红包排行|邀请记录
+export function red_envelope(data) {
+	return request({
+		url: `/envelope/red_envelope_ranking_login`,
+		method: 'post',
+		data: data
+	})
+}
+//购买下单
+export function place_order(data) {
+	return request({
+		url: `/order/place_order`,
+		method: 'post',
+		data: data
+	})
+}
+//提现申请
+export function withdrawal_record(data) {
+	return request({
+		url: `/withdrawal/withdrawal_record`,
+		method: 'post',
+		data: data
+	})
+}
+//提现列表
+export function withdrawal_list(data) {
+	return request({
+		url: `/withdrawal/withdrawal_list`,
+		method: 'post',
+		data: data
+	})
+}
+//我的订单
+export function ordre_list(data) {
+	return request({
+		url: `/order/ordre_list`,
+		method: 'post',
+		data: data
+	})
+}
+//邀请记录
+export function invite_list(data) {
+	return request({
+		url: `/my/invite_list`,
+		method: 'post',
+		data: data
+	})
+}
+//红包记录
+export function red_envelope_list(data) {
+	return request({
+		url: `/my/red_envelope_list`,
+		method: 'post',
+		data: data
+	})
+}
+//切换店铺
+export function login_shop_list(data) {
+	return request({
+		url: `/my/login_shop_list`,
+		method: 'post',
+		data: data
+	})
+}

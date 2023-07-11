@@ -2,35 +2,35 @@
 	<view>
 		<view class="bg">
 			<view class="red_top_box">
-				<image class="head_box" src="../../static/touxinag_demo.jpg"></image>
+				<image class="head_box" :src=" userInfo.avatar ? userInfo.avatar : '/static/touxinag_demo.jpg' "></image>
 				<view class="withdraw" @click="goWithdraw">提现</view>
 				<view class="my_money" >我的金额</view>
-				<view class="money_txt"><text>￥</text>{{120.00}}</view>
+				<view class="money_txt"><text>￥</text>{{userInfo.money}}</view>
 				<view class="progress_box">
 					<view class="progress_top_txt">
 						<view>0</view>
-						<view>200</view>
+						<view>{{userInfo.withdrawal_amount}}</view>
 					</view>
 					<view class="progress">
 						<u-line-progress :percentage="percentage" height="25rpx" :showText="false" activeColor="#f6cb57" inactiveColor="#a5231a"></u-line-progress>
 					</view>
 				</view>
-				<view class="rule">满200元即可提现</view>
+				<view class="rule">满{{userInfo.withdrawal_amount}}元即可提现</view>
 				<view class="red_button" @click="goShare">让红包变大</view>
 			</view>
 			<!-- 弹幕滚动前三提现信息 -->
-			<view class="subtitle_box">
-				<view class="subtitle_item item_1">
-					<image class="head" src="../../static/touxinag_demo.jpg"></image>
-					<text class="txt">春暖花开  &nbsp; 又提现了{{400}}元</text>
+			<view class="subtitle_box" v-show="withdrawal.length >0">
+				<view class="subtitle_item item_1" v-show="withdrawal[0]">
+					<image class="head" :src="withdrawal[0].avatar ? withdrawal[0].avatar : '/static/touxinag_demo.png'"></image>
+					<text class="txt">{{withdrawal[0].nickname}}  &nbsp; 又提现了{{withdrawal[0].money}}元</text>
 				</view>
-				<view class="subtitle_item item_2">
-					<image class="head" src="../../static/touxinag_demo.jpg"></image>
-					<text class="txt">春暖花开  &nbsp; 又提现了{{400}}元</text>
+				<view class="subtitle_item item_2" v-show="withdrawal[1]">
+					<image class="head" :src="withdrawal[1].avatar ? withdrawal[1].avatar : '/static/touxinag_demo.png'"></image>
+					<text class="txt">{{withdrawal[1].nickname}}  &nbsp; 又提现了{{withdrawal[1].money}}元</text>
 				</view>
-				<view class="subtitle_item  item_3">
-					<image class="head" src="../../static/touxinag_demo.jpg"></image>
-					<text class="txt">春暖花开  &nbsp; 又提现了{{400}}元</text>
+				<view class="subtitle_item  item_3" v-show="withdrawal[2]">
+					<image class="head" :src="withdrawal[2].avatar ? withdrawal[2].avatar : '/static/touxinag_demo.png'"></image>
+					<text class="txt">{{withdrawal[2].nickname}}  &nbsp; 又提现了{{withdrawal[2].money}}元</text>
 				</view>
 			</view>
 			<view class="red_list_box">
@@ -42,13 +42,13 @@
 				<!-- 红包排行 - 自己 -->
 				<view class="item_box oneself" v-if="checkedTitleNum==0">
 					<view class="icon"><u-icon name="gift-fill" color="#f8d950" size="50"></u-icon></view>
-					<image class="head" src="../../static/touxinag_demo.jpg"></image>
+					<image class="head" :src="current.avatar ? current.avatar : '/static/touxinag_demo.png'"></image>
 					<view class="info">
-						<view class="name">葫芦小金刚</view>
-						<view class="ranking">第28名</view>
+						<view class="name">{{current.nickname}}</view>
+						<view class="ranking">第{{current.rank}}名</view>
 					</view>
 					<view class="money_box">
-						120元
+						{{current.total_amount}}元
 						<view class="money_icon">
 							<u-icon name="rmb-circle" color="#f7d458" size="50"></u-icon>
 						</view>
@@ -56,14 +56,14 @@
 				</view>
 				<!-- 红包排行 -->
 				<view style="height: 805rpx; overflow-y: auto;" v-if="checkedTitleNum==0">
-					<view class="item_box " :class="{'top_line': index > 0}" v-for="(item,index) in list" :key="index">
+					<view class="item_box " :class="{'top_line': index > 0}" v-for="(item,index) in all" :key="item.id">
 						<view class="icon">{{index+1}}</view>
-						<image class="head" :src="item.img"></image>
+						<image class="head" :src="item.avatar ? item.avatar : '/static/touxinag_demo.png'"></image>
 						<view class="info">
-							<view class="name">{{item.name}}</view>
+							<view class="name">{{item.nickname}}</view>
 						</view>
 						<view class="money_box">
-							{{item.num}}元
+							{{item.total_amount}}元
 							<view class="money_icon">
 								<u-icon name="rmb-circle" color="#f7d458" size="50"></u-icon>
 							</view>
@@ -72,14 +72,14 @@
 				</view>
 				<!-- 邀请进展 -->
 				<view style="height: 805rpx; overflow-y: auto; margin-top: 20rpx;" v-if="checkedTitleNum==1">
-					<view class="item_box " :class="{'top_line': index > 0}" v-for="(item,index) in list" :key="index">
+					<view class="item_box " :class="{'top_line': index > 0}" v-for="(item,index) in inviteList" :key="item.id">
 						<view class="icon">{{index+1}}</view>
-						<image class="head" :src="item.img"></image>
+						<image class="head" :src="item.avatar ? item.avatar : '/static/touxinag_demo.png'"></image>
 						<view class="info">
-							<view class="name">{{item.name}}</view>
+							<view class="name">{{item.nickname}}</view>
 						</view>
 						<view class="money_box">
-							{{'未下单'}}
+							{{item.status}}
 							<view class="money_icon">
 								<u-icon name="weixin-circle-fill" color="#f7d458" size="50"></u-icon>
 							</view>
@@ -90,13 +90,13 @@
 			<view class="merchant">
 				<view class="merchant_title">红包提供方</view>
 				<view class="merchant_box">
-					<image class="merchant_img" src="../../static/touxinag_demo.jpg"></image>
+					<image class="merchant_img" :src="product.shop.image ? product.shop.image : '/static/touxinag_demo.png'"></image>
 					<view class="merchant_info">
-						<view class="name">云紫妈妈孕产调理中心</view>
-						<view class="address">山东省青岛市李沧区</view>
+						<view class="name">{{product.shop.name}}</view>
+						<view class="address">{{product.shop.address}}</view>
 					</view>
 					<view class="line"></view>
-					<view class="phone" @click="callPhone('13371440807')">
+					<view class="phone" @click="callPhone(product.shop.tel)">
 						<u-icon name="phone-fill" size="60" color="#f7f7f7"></u-icon>
 					</view>
 				</view>
@@ -106,30 +106,29 @@
 </template>
 
 <script>
+	import { red_envelope } from '@/api/index.js'
+	import { mapGetters } from  'vuex'
 	export default {
 		data() {
 			return {
-				list:[
-					{name:'春暖花开',img:'../../static/touxinag_demo.jpg',num:120},
-					{name:'春暖花开',img:'../../static/touxinag_demo.jpg',num:120},
-					{name:'春暖花开',img:'../../static/touxinag_demo.jpg',num:120},
-					{name:'春暖花开',img:'../../static/touxinag_demo.jpg',num:120},
-					{name:'春暖花开',img:'../../static/touxinag_demo.jpg',num:120},
-					{name:'春暖花开',img:'../../static/touxinag_demo.jpg',num:120},
-					{name:'春暖花开',img:'../../static/touxinag_demo.jpg',num:120},
-					{name:'春暖花开',img:'../../static/touxinag_demo.jpg',num:120},
-					{name:'春暖花开',img:'../../static/touxinag_demo.jpg',num:120},
-					{name:'春暖花开',img:'../../static/touxinag_demo.jpg',num:120},
-				],
-				checkedTitleNum:0
+				checkedTitleNum:0,
+				all:[],//所有用户信息排行
+				current:{},//当前用户登录信息
+				product:{},//产品信息
+				withdrawal:[],//提现信息滚动
+				inviteList:[],//邀请信息
 			}
 		},
 		onLoad() {
 
 		},
+		onShow() {
+			this.getRedList()
+		},
 		computed:{
+			...mapGetters(['userInfo','proid']),
 			percentage(){
-				return 120 / 200 * 100
+				return this.userInfo.money / this.userInfo.withdrawal_amount * 100
 			}
 		},
 		methods: {
@@ -181,6 +180,19 @@
 			},
 			changeTitle(index){
 				this.checkedTitleNum=index
+			},
+			getRedList(){
+				let params={
+					id:this.proid
+				}
+				red_envelope(params).then(res=>{
+					let { all, current, product, withdrawal,inviteList} =res.data
+					this.all=all
+					this.current=current
+					this.product=product
+					this.withdrawal=withdrawal
+					this.inviteList=inviteList
+				})
 			}
 		}
 	}

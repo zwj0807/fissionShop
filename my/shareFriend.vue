@@ -1,6 +1,6 @@
 <template>
 	<view style="background-color: #fff;overflow: hidden;">
-		<image class="img" src="../static/touxinag_demo.jpg"></image>
+		<image class="img" src="/static/touxinag_demo.png"></image>
 		<view class="text_line_box">
 			<view class="txt">第一步&nbsp;点击保存海报</view>
 			<button class="button"    @click="savePosterTap('https://www.jumidongli.com/template/pc/static/demoImg/fissionShop/redhot_bg.png')">保存海报</button >

@@ -1,14 +1,14 @@
 <template>
 	<view>
 		<view class="title_box">
-			<text>邀请好友人数：{{num_1}}人</text>
-			<view class="button">未下单{{num_2}}人</view>
+			<text>邀请好友人数：{{info.invite}}人</text>
+			<view class="button">未下单{{info.noplace}}人</view>
 		</view>
 		<view class="main" >
-			<view class="item_box" v-for=" item in 12">
-				<image class="img" src="../static/touxinag_demo.jpg"></image>
-				<view class="txt">huhulhulhull</view>
-				<view class="state" :class="{'state_2':true}">未下单</view>
+			<view class="item_box" v-for=" (item ,index) in inviteList" :key="index">
+				<image class="img" :src=" item.avatar? item.avatar: '/static/touxinag_demo.jpg'"></image>
+				<view class="txt">{{item.nickname}}</view>
+				<view class="state" :class="{'state_2':item.status=='已下单'}">{{item.status}}</view>
 			</view>
 		</view>
 		
@@ -16,15 +16,36 @@
 </template>
 
 <script>
+import { invite_list } from '@/api/index.js'
+import { mapGetters } from  'vuex'
 	export default{
 		data(){
 			return{
 				num_1:0,
-				num_2:100
+				num_2:100,
+				info:{},//总数据
+				inviteList:[],//邀请用户列表
+				user:{},//当前登录用户信息
 			}
 		},
+		computed:{
+			...mapGetters(['userInfo','proid']),
+		},
+		onShow() {
+			this.getList()
+		},
 		methods:{
-			
+			getList(){
+				let params={
+					id:this.proid
+				}
+				invite_list(params).then(res=>{
+					this.info=res.data
+					let{ inviteList,user}=this.info
+					this.inviteList=inviteList
+					this.user=user
+				})
+			}
 		}
 	}
 </script>

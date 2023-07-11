@@ -1,64 +1,61 @@
 <template>
 	<view>
-		<view class="item_box">
+		<view class="item_box" v-for="(item,index) in list" :key="item.id">
 			<view class="line_one">
-				<view>{{obj[0]}}</view>
-				<view style="font-weight: 600; color: #ff0000;">+{{num}}元</view>
+				<view>{{obj[item.category]}}</view>
+				<view style="font-weight: 600; color: #ff0000;">+{{item.money}}元</view>
 			</view>
 			<view class="line_two">
-				<view>2023-07-03 13:31:32</view>
-				<view>{{oDay}}天{{oHour}}小时{{oMinute}}分{{oSecond}}秒失效</view>
+				<view>{{$util.parseTime(item.createtime)}}</view>
+				<view>{{dateArr[0]}}天{{dateArr[1]}}小时{{dateArr[2]}}分{{dateArr[3]}}秒失效</view>
 			</view>
 		</view>
 	</view>
 </template>
 
 <script>
+import { red_envelope_list } from '@/api/index.js'
+import { mapGetters } from  'vuex'
 	export default{
 		data(){
 			return{
 				obj:{
-					0:'拆红包奖励'
+					1:'拆红包奖励',
+					2:'用户下单佣金'
 				},
 				num:120,
-				oDay:0,
-				oHour:0,
-				oMinute:0,
-				oSecond:0,
+				dateArr:['00','00','00','00'],
+				info:{},
+				list:[],
 			}
 		},
 		onShow() {
-			this.down()
+			this.getList()
+		},
+		computed:{
+			...mapGetters(['userInfo','proid']),
 		},
 		methods:{
+
 			down(){
-				setInterval(()=>{
-					this.cutDate('2023/07/10 17:00:00')
+				let timer= setInterval(()=>{
+					this.dateArr= this.$util.cutDownDate(this.$util.parseTime(this.info.product.limited_time))
+					if(this.dateArr[4]=='-1'){ //倒计时结束
+						this.dateArr=['00','00','00','00','-1']
+						clearInterval(timer)
+					}
 				},1000)
 			},
-			cutDate(time){
-				//当前时间
-				let startTime = new Date();
-				//结束时间
-				let endTime =  new Date(time);
-				//算出中间差，以毫秒数返回.
-				let countDown = (endTime.getTime()-startTime.getTime());
-				//获取天数
-				let oDay = parseInt(countDown/1000/60/60/24) 
-				//获取小时数
-				let oHour = parseInt(countDown/1000/60/60%24);
-				//获取分钟数
-				let oMinute = parseInt(countDown/1000/60%60);
-				//获取秒数
-				let oSecond = parseInt(countDown/1000%60);
-				//输出
-				this.oDay= this.filterNum(oDay)
-				this.oHour= this.filterNum(oHour)
-				this.oMinute= this.filterNum(oMinute)
-				this.oSecond= this.filterNum(oSecond)
-			},
-			filterNum(n){
-			    return n < 10 ?'0'+n :n;
+			getList(){
+				let params={
+					id:this.proid
+				}
+				red_envelope_list(params).then(res=>{
+					this.info=res.data
+					let{ list } = this.info
+					this.list = list
+					this.down()
+				})
 			}
 		}
 	}

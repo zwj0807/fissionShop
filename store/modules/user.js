@@ -9,6 +9,7 @@ const user = {
 	state: {
 		token: getToken(),
 		userInfo: uni.getStorageSync('user_info') ? JSON.parse(uni.getStorageSync('user_info')) : null,
+		proid:uni.getStorageSync('pro_id') ? JSON.parse(uni.getStorageSync('pro_id')) : null,
 	},
 
 	mutations: {
@@ -19,6 +20,10 @@ const user = {
 		SET_USERINFO: (state, info) => {
 			state.userInfo = info
 			uni.setStorageSync('user_info', JSON.stringify(info))
+		},
+		SET_PROID:(state, id) => {
+			state.proid = id
+			uni.setStorageSync('pro_id', JSON.stringify(id))
 		},
 	},
 

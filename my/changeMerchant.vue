@@ -1,11 +1,11 @@
 <template>
 	<view>
-		<view class="shop_box" @click="goIndex">
-			<image class="img" src="../static/touxinag_demo.jpg"></image>
+		<view class="shop_box" @click="goIndex(item)" v-for="(item,index) in list" :key="item.id">
+			<image class="img" :src="item.image.split(',')[0] ? item.image.split(',')[0] : '/static/touxinag_demo.png'"></image>
 			<view class="right_box" style="">
 				<view class="info_box">
-					<view class="title">云紫妈妈孕产调理中心</view>
-					<view class="address">山东省青岛市李沧区</view>
+					<view class="title">{{item.name}}</view>
+					<view class="address">{{item.address}}</view>
 				</view>
 				<view class="icon"><u-icon name="arrow-right" size="30"></u-icon></view>
 			</view>
@@ -15,16 +15,29 @@
 </template>
 
 <script>
+	import { login_shop_list } from '@/api/index.js'
+	import { mapGetters } from  'vuex'
 	export default{
 		data(){
 			return{
-				
+				list:[]
 			}
 		},
+		computed:{
+			...mapGetters(['userInfo','proid']),
+		},
+		onShow() {
+			this.getList()
+		},
 		methods:{
-			goIndex(){
+			goIndex(item){
 				uni.switchTab({
-					url:'/pages/index/index'
+					url:`/pages/index/index?id=${item.id}`
+				})
+			},
+			getList(){
+				login_shop_list().then(res=>{
+					this.list=res.data
 				})
 			}
 		}

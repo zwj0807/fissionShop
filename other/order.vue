@@ -1,35 +1,38 @@
 <template>
 	<view>
 		<view class="goods_box">
-			<image class="img" src="../static/touxinag_demo.jpg"></image>
+			<image class="img" :src=" proInfo.image[0] ? proInfo.image[0] : '../static/touxinag_demo.jpg'"></image>
 			<view style="width: 400rpx;">
 				<view class="txt">
-					云紫妈妈孕产调理中心
+					{{proInfo.name}}
 				</view>
 				<view class="txt_num">
-					数量{{1}}
+					数量{{buyNum}}
 				</view>
 			</view>
-			<view class="money">￥{{199.00}}</view>
+			<view class="money">￥{{money}}</view>
 			
 		</view>
 		<view class="merchant">
 			<view class="merchant_title">提货地址</view>
 			<view class="merchant_box">
-				<image class="merchant_img" src="../static/touxinag_demo.jpg"></image>
+				<image class="merchant_img" :src="proInfo.shop.image ? proInfo.shop.image : '/static/touxinag_demo.jpg'"></image>
 				<view class="merchant_info">
-					<view class="name">云紫妈妈孕产调理中心</view>
-					<view class="address">山东省青岛市李沧区</view>
+					<view class="name">{{proInfo.shop.name}}</view>
+					<view class="address">{{proInfo.shop.address}}</view>
 				</view>
 				<view class="line"></view>
-				<view class="phone" @click="callPhone('13371440807')">
+				<view class="phone" @click="callPhone(proInfo.shop.tel)">
 					<u-icon name="phone-fill" size="60" color="#a1a1a1"></u-icon>
 				</view>
 			</view>
 		</view>
 		<view class="lable_box">支付方式</view>
 		<view class="payType">
-			<view style="margin-left: 30px;font-size: 26rpx;color: #191919;">微信支付</view>
+			<view style="margin-left: 30rpx; display: flex;align-items: center;">
+				<u-icon name="weixin-circle-fill" size="50" color="#04D168"></u-icon>
+				<view style="margin-left: 30rpx;font-size: 26rpx;color: #191919;">微信支付</view>
+			</view>
 			<view style="margin-right: 32rpx;"><u-radio-group  v-model="value"><u-radio size="40" iconSize="40" name="1" shape="circle" ></u-radio></u-radio-group></view>
 		</view>
 		<view class="lable_box">购买数量</view>
@@ -47,7 +50,7 @@
 		<view style="height: 110rpx;">
 			<view class="tabbar_box">
 				<view class="tabar_left">
-					￥{{199}}元
+					￥{{money}}元
 				</view>
 				<view class="tabar_right" @click="subPay">
 					支付
@@ -58,16 +61,28 @@
 </template>
 
 <script>
+	import { place_order,product_details } from '@/api/index.js'
+	import { mapGetters } from  'vuex'
 	export default {
 		data() {
 			return {
 				value:'1',
-				buyNum:1,
-				buyPhone:''
+				buyNum:1,//购买数量
+				buyPhone:'',//购买手机号
+				proInfo:{},//产品信息
 			}
 		},
 		onLoad() {
 
+		},
+		computed: {
+			...mapGetters(['userInfo','proid']),
+			money(){
+				return parseFloat(this.buyNum) * this.proInfo.price_text
+			}
+		},
+		onShow() {
+			this.getproductDetails()
 		},
 		methods: {
 			numMinus(){
@@ -117,8 +132,39 @@
 				}
 			},
 			subPay(){
-				
-			}
+				if(Array.isArray(this.buyNum) || this.buyNum <1){
+					this.$util.toast('购买数量填写错误')
+					return false
+				}
+				if(!this.$util.verifyMobile(this.buyPhone)){
+					this.$util.toast('提货手机号填写错误')
+					return false
+				}
+				let params={
+					id:this.proid,
+					money:this.money,
+					mobile:this.buyPhone
+				}
+				place_order(params).then(res=>{
+					this.$util.toast('购买成功')
+					setTimeout(()=>{
+						uni.switchTab({
+							url:'/pages/index/index'
+						})
+					},1000)
+				}).catch((err)=>{
+					this.$util.toast(err.msg)
+				})
+			},
+			getproductDetails(){
+				let params={
+					id:this.proid
+				}
+				product_details(params).then(res=>{
+					this.proInfo=res.data
+					this.proInfo.image=this.proInfo.image.split(',')
+				})
+			},
 		}
 	}
 </script>

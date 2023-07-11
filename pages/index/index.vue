@@ -1,5 +1,5 @@
 <template>
-	<view :class="{popupShow:adShow}">
+	<view :class="{popupShow:isTurntable}">
 		<view style="height: 168rpx;">
 			<view class="nav_top">
 				<view class="text">{{proInfo.name}}</view>
@@ -7,7 +7,7 @@
 		</view>
 		<view class="top_box">
 			<view class="box_bg">
-				<image class="img" :src="user.avatar ? user.avatar : '/static/touxiang_demo.png'"></image>
+				<image class="img" :src="user.avatar ? user.avatar : '../../static/touxinag_demo.png'"></image>
 				<view class="text">我的红包余额：</view>
 				<view class="text_2">{{user.money}}元</view>
 				<view class="text_3">正在变大...</view>
@@ -60,15 +60,15 @@
 		</view>
 		<view class="friends_box">
 			<view class="friends_line_one">
-				<view class="line_one_text"><text style="font-size: 24rpx; color: #e27e6b;">87</text>人正在给朋友发红包</view>
+				<view class="line_one_text"><text style="font-size: 24rpx; color: #e27e6b;">{{allUser.length}}</text>人正在给朋友发红包</view>
 				<button open-type="share">
 				<view class="line_one_share">我也要送</view>
 				</button>
 			</view>
 			<view class="head_box">
-				<view class="head_item_box" v-for="(item,index) in 30" :key="index">
-					<image class="head_img" src="../../static/touxinag_demo.png"></image>
-					<view class="head_name">葫芦xiaojingang</view>
+				<view class="head_item_box" v-for="(item,index) in allUser" :key="item.id">
+					<image class="head_img" :src=" item.avatar  ? item.avatar : '../../static/touxinag_demo.png'"></image>
+					<view class="head_name">{{item.nickname}}</view>
 				</view>
 
 			</view>
@@ -76,13 +76,13 @@
 		<view class="merchant_box">
 			<view class="merchant_title">商铺信息</view>
 			<view class="merchant_info">
-				<image class="img" src="../../static/touxinag_demo.png"></image>
+				<image class="img" :src="shop.image ? shop.image :'../../static/touxinag_demo.png'"></image>
 				<view class="merchant_info_name">
-					<view class="info_name">云紫妈妈孕产调理中心</view>
-					<view class="address_name"><u-icon name="map-fill" size="20" color="#8a8a88"></u-icon>定陶区复兴大道中央新城 北区南门东30米</view>
+					<view class="info_name">{{shop.name}}</view>
+					<view class="address_name"><u-icon name="map-fill" size="20" color="#8a8a88"></u-icon>{{shop.address}}</view>
 				</view>
 				<view class="cut_line"></view>
-				<view style="margin-left: 30rpx;"  @click="callPhone('13371440807')">
+				<view style="margin-left: 30rpx;"  @click="callPhone(shop.tel)">
 					<u-icon name="phone-fill" size="40" color="#8a8a88"></u-icon>
 				</view>
 				
@@ -90,7 +90,7 @@
 		</view>
 		<view class="detail_box">
 			<text class="txt">商品详情</text>
-			<image class="detail_img" mode="widthFix" src="../../static/touxinag_demo.png"></image>
+			<view style="overflow: hidden;" v-html="proInfo.content"></view>
 		</view>
 		<view style="height: 110rpx;">
 			<view class="tabbar_box">
@@ -108,10 +108,10 @@
 						<view class="text">我的</view>
 					</view>
 				</view>
-				<view class="tabar_right" @click="immediately">
-					立即购买
+				<view class="tabar_right" :class="{'tabar_right_end' : dateArr[4]=='-1' || !proInfo.limited_status}" @click="immediately">
+					{{dateArr[4]=='-1' || !proInfo.limited_status ? "已结束" : "立即购买"}}
 				</view>
-				<view class="tabar_tips">首次下单返<text style="color: #ec6238;">{{50}}</text>元</view>
+				<view class="tabar_tips">首次下单返<text style="color: #ec6238;">{{user.refund_amount}}</text>元</view>
 			</view>
 		</view>
 		<button open-type="share">
@@ -123,16 +123,17 @@
 
 		<view class="right_service">
 			<view class="box"><u-icon name="kefu-ermai" size="40" color="#fff"></u-icon></view>
-			<view class="txt" @click="callPhone('13371440807')">客服</view>
+			<view class="txt" @click="callPhone(shop.tel)">客服</view>
 		</view>
 		<!-- 大转盘 -->
 		<view>
-			<u-popup :show="adShow" :customStyle="{overflow: 'hidden'}" round="15" mode="center" bgColor="transparent"  :closeOnClickOverlay="false" :safeAreaInsetBottom="false">
+			<u-popup :show="isTurntable" :customStyle="{overflow: 'hidden'}" round="15" mode="center" bgColor="transparent"  :closeOnClickOverlay="false" :safeAreaInsetBottom="false">
 			    <view class="ad_box">
-			        <view class="ad_title">送你一个1-120的现金红包</view>
+			        <view class="ad_title">{{activityInfo.title}}</view>
 					<view class="wheel_main">
 						<view class="wheel_box">
 							<LuckyWheel
+								  v-if="isTurntable"
 							      ref="myLucky"
 							      width="490rpx"
 							      height="490rpx"
@@ -152,7 +153,7 @@
 			<u-popup :show="winShow" :customStyle="{overflow: 'hidden'}" round="15" mode="center" :closeOnClickOverlay="false" @close="close">
 				<view class="win_box" >
 					<view class="win_title">恭喜！获得现金奖励</view>
-					<view class="win_txt">100<text>元</text></view>
+					<view class="win_txt">{{smokeInfo.money}}<text>元</text></view>
 					<view class="submit_button" @click="adopt">
 						领取
 					</view>
@@ -164,30 +165,17 @@
 
 <script>
 	import LuckyWheel from '@lucky-canvas/uni/lucky-wheel' // 大转盘
-	import { product_details,current_user } from '@/api/index.js'
+	import { product_details,current_user,activity_details,activity_smoke } from '@/api/index.js'
+	import { mapGetters } from  'vuex'
 	export default {
 		components:{
 			LuckyWheel
 		},
 		data() {
 			return {
-					share: {
-						title: '标题',
-						path: '/pages/index/index',    // 全局分享的路径
-						imageUrl:'',    // 全局分享的图片
-						desc: '分享的描述'
-					},
-					adShow:false,
-					winShow:false,
+					isTurntable:false, //大转盘是否显示
+					winShow:false, //转盘结束确认领取对话框
 					blocks: [{ padding: '10rpx', background: '#b41c1b' }],
-					prizes: [
-					  { fonts: [{ text: '0元现金', top: '10%' }], background: '#e8e8e8' },
-					  { fonts: [{ text: '1元现金', top: '10%' }], background: '#fefefe' },
-					  { fonts: [{ text: '2元现金', top: '10%' }], background: '#e8e8e8' },
-					  { fonts: [{ text: '3元现金', top: '10%' }], background: '#fefefe' },
-					  { fonts: [{ text: '4元现金', top: '10%' }], background: '#e8e8e8' },
-					  { fonts: [{ text: '5元现金', top: '10%' }], background: '#fefefe' },
-					],
 					buttons: [
 					  { radius: '80rpx', background: '#b80100' },
 					  { radius: '80rpx', background: '#f33213' },
@@ -197,30 +185,38 @@
 					    fonts: [{ text: '开始\n抽奖',fontColor:'#fff',fontSize:'26rpx', top: '-30rpx' }]
 					  },
 					],
-					dateArr:['00','00','00','00'],
+					prizes: [],
+					
+					dateArr:['00','00','00','00'],//倒计时
 					proInfo:{}, //产品信息
 					user:{},//当前登录用户信息
+					allUser:[], //所有用户的信息
+					shop:{}, //商铺信息
+					activityInfo:{},//大转盘信息
+					smokeInfo:{}, // 中奖信息
 			}
 		},
 		onLoad(options) {
-			this.getUserInfo()
-			console.log('来自庄庄的分享',options)
+			console.log('来自庄庄的分享参数',options)
+			options.id=1  
+			this.$store.commit('SET_PROID',options.id)
 		},
 		onShareAppMessage(res) {
 		    return {
-		      title: '商美裂变小程序',
-		      path: `/pages/index/index?id=${123456789}`,
-		      // imageUrl: '/static/imgs/mylogo.png'
+		      title: '商美A客户',
+		      path: `/pages/index/index?id=${1}`,
 		    }
 		},
 		onShow() {
 			uni.hideTabBar()
-			
 			this.getproductDetails()
-			this.down()
+			this.getActivity()
 		},
 		onHide() {
 			uni.showTabBar()
+		},
+		computed: {
+			...mapGetters(['userInfo','proid']),
 		},
 		methods: {
 			goWithdraw(num){
@@ -236,13 +232,16 @@
 			startCallBack () {
 			  // 先开始旋转
 			  this.$refs.myLucky.play()
-			  // 使用定时器来模拟请求接口
-			  setTimeout(() => {
-			    // 假设后端返回的中奖索引是0
-			    const index = 0
-			    // 调用stop停止旋转并传递中奖索引
-			    this.$refs.myLucky.stop(index)
-			  }, 1000)
+			  let params={
+				  id:this.proid
+			  }
+			  activity_smoke(params).then(res=>{
+				  let index = 0
+				  this.smokeInfo=res.data
+				  // 调用stop停止旋转并传递中奖索引
+				  this.$refs.myLucky.stop(this.smokeInfo.position)
+				  
+			  })
 			},
 			// 抽奖结束触发回调
 			endCallBack (prize) {
@@ -251,8 +250,9 @@
 			  this.winShow=true
 			},
 			adopt(){
+				this.getUserInfo()
 				this.winShow = false
-				this.adShow =false
+				this.isTurntable =false
 			},
 			goRed(){
 				uni.switchTab({
@@ -301,33 +301,74 @@
 				}
 			},
 			immediately(){
-				uni.navigateTo({
-					url:'/other/order'
-				})
+				if(this.dateArr[4]=='-1'|| !this.proInfo.limited_status){
+					this.$util.toast('活动已结束')
+					return false
+				}else{
+					uni.navigateTo({
+						url:'/other/order'
+					})
+				}
+				
 			},
 			down(){
 				let timer= setInterval(()=>{
-					this.dateArr= this.$util.cutDownDate('2023/07/10 17:25:00')
-					if(this.dateArr[4]=='-1'){
-						this.dateArr=['00','00','00','00']
+					this.dateArr= this.$util.cutDownDate(this.$util.parseTime(this.proInfo.limited_time))
+					if(this.dateArr[4]=='-1'){ //倒计时结束
+						this.dateArr=['00','00','00','00','-1']
 						clearInterval(timer)
 					}
 				},1000)
 			},
 			getproductDetails(){
 				let params={
-					id:1
+					id:this.proid
 				}
 				product_details(params).then(res=>{
 					this.proInfo=res.data
 					this.proInfo.image=this.proInfo.image.split(',')
-					let { allUser, user, is_turntable, shop, service, }=this.proInfo
+					let { allUser, user, is_turntable, shop, service }=this.proInfo
 					this.user=user
+					this.allUser=allUser
+					this.isTurntable=is_turntable
+					this.shop=shop
+					this.$store.commit('SET_USERINFO', this.user)
+					if(this.proInfo.limited_status){
+						this.down()
+					}
+					
+				})
+			},
+			getActivity(){
+				let params={
+					id:this.proid
+				}
+				activity_details(params).then(res=>{
+					this.activityInfo=res.data
+					//处理转盘数据
+					let { activity_content } = this.activityInfo
+					this.prizes=[]
+					let background = ['#e8e8e8','#fefefe']
+					activity_content.forEach((item,index)=>{
+						let obj={
+							fonts:[
+								{
+									text: item.prize + '元现金',
+									top:'10%',
+									fontColor:'#ff953e',
+									fontSize:'28rpx'
+								}
+							],
+							background: background[index%2]
+						}
+						this.prizes.push(obj)
+					})
 				})
 			},
 			getUserInfo(){
 				current_user().then(res=>{
-					console.log('current_user',res)
+					this.user=res.data
+					this.$store.commit('SET_USERINFO', this.user)
 				})
 			}
 		}
@@ -593,13 +634,13 @@
 		height: 300rpx;
 		padding: 23rpx 30rpx;
 		display: flex;
-		justify-content: space-between;
+		justify-content: flex-start;
 		flex-wrap: wrap;
 		overflow: auto;
 		.head_item_box{
 			width: 85rpx;
 			height: 120rpx;
-			margin: 0 20rpx 38rpx 20rpx;
+			margin: 0 22rpx 38rpx 22rpx;
 			.head_img{
 				width: 85rpx;
 				height: 85rpx;
@@ -612,6 +653,7 @@
 				color: #14100f;
 				text-overflow: ellipsis;
 				white-space: nowrap;
+				text-align: center;
 			}
 		}
 	}
@@ -722,6 +764,9 @@
 		line-height: 110rpx;
 		font-size: 33rpx;
 		text-align: center;
+	}
+	.tabar_right_end{
+		background-image: linear-gradient(to right,#626262,#626262);
 	}
 	.tabar_tips{
 		width: 230rpx;
