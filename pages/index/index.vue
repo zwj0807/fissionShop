@@ -165,6 +165,7 @@
 
 <script>
 	import LuckyWheel from '@lucky-canvas/uni/lucky-wheel' // 大转盘
+	import { getToken } from '@/utils/auth'
 	import { product_details,current_user,activity_details,activity_smoke } from '@/api/index.js'
 	import { mapGetters } from  'vuex'
 	export default {
@@ -197,9 +198,18 @@
 			}
 		},
 		onLoad(options) {
-			console.log('来自庄庄的分享参数',options)
-			options.id=1  
-			this.$store.commit('SET_PROID',options.id)
+			let token = getToken()
+			console.log('来自庄庄的分享参数',options,token)
+			if(!token){
+				uni.reLaunch({
+					url:'/pages/login'
+				})
+			}
+			// options.id=1  
+			if(options){
+				this.$store.commit('SET_PROID',options.id)
+				console.log('pp',this.proid)
+			}
 		},
 		onShareAppMessage(res) {
 		    return {
@@ -208,6 +218,7 @@
 		    }
 		},
 		onShow() {
+			console.log('onshow')
 			uni.hideTabBar()
 			this.getproductDetails()
 			this.getActivity()

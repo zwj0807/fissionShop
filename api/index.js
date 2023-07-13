@@ -14,6 +14,14 @@ import request from '@/utils/request'
 // 	})
 // }
 
+//登录
+export function login_weixin(data) {
+	return request({
+		url: `/user/third`,
+		method: 'post',
+		data: data
+	})
+}
 //大转盘奖品信息
 export function activity_details(data){
 	return request({
@@ -106,6 +114,24 @@ export function red_envelope_list(data) {
 export function login_shop_list(data) {
 	return request({
 		url: `/my/login_shop_list`,
+		method: 'post',
+		data: data
+	})
+}
+
+//获取二维码
+export function poster(data) {
+	return request({
+		url: `/User/poster`,
+		method: 'post',
+		data: data
+	})
+}
+
+//获取二维码
+export function getuserphonenumber(data) {
+	return request({
+		url: `/user/getuserphonenumber`,
 		method: 'post',
 		data: data
 	})

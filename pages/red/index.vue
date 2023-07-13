@@ -286,6 +286,7 @@
 	}
 	.subtitle_box{
 		height: 210rpx;
+		overflow: hidden;
 		// background-color: rgba(163, 255, 65, 0.2);
 		.subtitle_item{
 			box-sizing: border-box;

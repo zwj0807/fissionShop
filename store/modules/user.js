@@ -29,43 +29,43 @@ const user = {
 
 	actions: {
 		// 登录
-		Login({commit,dispatch}, userInfo) {
-			return new Promise((resolve, reject) => {
-				login(userInfo).then(res => {
-					commit('SET_TOKEN', res.token)
-					dispatch('GetInfo')
-					resolve()
-				}).catch(error => {
-					reject(error)
-				})
-			})
-		},
+		// Login({commit,dispatch}, userInfo) {
+		// 	return new Promise((resolve, reject) => {
+		// 		login(userInfo).then(res => {
+		// 			commit('SET_TOKEN', res.token)
+		// 			dispatch('GetInfo')
+		// 			resolve()
+		// 		}).catch(error => {
+		// 			reject(error)
+		// 		})
+		// 	})
+		// },
 		// 获取用户信息
-		GetInfo({commit,state}) {
-			return new Promise((resolve, reject) => {
-				fetchUserInfo().then(res => {
-					const user = res.data
-					commit('SET_USERINFO', user)
-					resolve(res)
-				}).catch(error => {
-					reject(error)
-				})
-			})
-		},
+		// GetInfo({commit,state}) {
+		// 	return new Promise((resolve, reject) => {
+		// 		fetchUserInfo().then(res => {
+		// 			const user = res.data
+		// 			commit('SET_USERINFO', user)
+		// 			resolve(res)
+		// 		}).catch(error => {
+		// 			reject(error)
+		// 		})
+		// 	})
+		// },
 
 		// 退出
-		LogOut({commit,state}) {
-			return new Promise((resolve, reject) => {
-				logout(state.token).then(() => {
-					commit('SET_TOKEN', '')
-					removeToken()
-					uni.clearStorageSync()
-					resolve()
-				}).catch(error => {
-					reject(error)
-				})
-			})
-		}
+		// LogOut({commit,state}) {
+		// 	return new Promise((resolve, reject) => {
+		// 		logout(state.token).then(() => {
+		// 			commit('SET_TOKEN', '')
+		// 			removeToken()
+		// 			uni.clearStorageSync()
+		// 			resolve()
+		// 		}).catch(error => {
+		// 			reject(error)
+		// 		})
+		// 	})
+		// }
 	}
 }
 

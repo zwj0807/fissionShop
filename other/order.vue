@@ -146,12 +146,30 @@
 					mobile:this.buyPhone
 				}
 				place_order(params).then(res=>{
-					this.$util.toast('购买成功')
-					setTimeout(()=>{
-						uni.switchTab({
-							url:'/pages/index/index'
+					let obj = res.data || {}
+						//调用微信官方支付接口弹出付款界面,输入密码扣款
+						wx.requestPayment({
+							timeStamp: obj.timeStamp,  //后端返回的时间戳
+							nonceStr:  obj.nonceStr,   //后端返回的随机字符串
+							package:  obj.packageValue, //后端返回的prepay_id
+							signType: 'MD5', //后端签名算法,根据后端来,后端MD5这里即为MD5
+							paySign:  obj.paySign,  //后端返回的签名
+							success (res) {
+								console.log('用户支付扣款成功', res)
+								this.$util.showConfirm('购买成功').then(res => {
+									setTimeout(()=>{
+										uni.switchTab({
+											url:'/pages/index/index'
+										})
+									},1000)
+								})
+							},
+							fail (err) { 
+								this.$util.toast('支付失败')
+								console.log('用户支付扣款失败', err)
+							}
 						})
-					},1000)
+					
 				}).catch((err)=>{
 					this.$util.toast(err.msg)
 				})

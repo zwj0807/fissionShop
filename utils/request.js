@@ -15,10 +15,10 @@ const request = config => {
 	// 是否需要设置 token
 	const isToken = (config.headers || {}).isToken === false
 	config.header = config.header || {}
-	// if (getToken() && !isToken) {
-	// 	// config.header['Authorization'] = 'Bearer ' + getToken()   
-	// 	 config.header['Authorization'] = 'd774dc00-01ca-4b85-bf57-9393282b9597'
-	// }
+	if (getToken() && !isToken) {
+		// config.header['Authorization'] = 'Bearer ' + getToken()   
+		 config.header['Authorization'] = getToken()
+	}
 	config.header['Authorization'] = 'd774dc00-01ca-4b85-bf57-9393282b9597'
 	// get请求映射params参数
 	if (config.params) {
@@ -39,15 +39,13 @@ const request = config => {
 				const code = data.code || 200
 				const msg = errorCode[code] || data.msg || errorCode['default']
 				if (code === 401) {
-					// showConfirm('登录状态已过期，您可以继续留在该页面，或者重新登录?').then(res => {
-					// 	if (res.confirm) {
-					// 		store.dispatch('LogOut').then(res => {
-					// 			uni.reLaunch({
-					// 				url: '/index/login'
-					// 			})
-					// 		})
-					// 	}
-					// })
+					showConfirm('登录状态已过期，请重新登录').then(res => {
+						if (res.confirm) {
+								uni.reLaunch({
+									url: '/pages/login'
+								})
+						}
+					})
 					reject('无效的会话，或者会话已过期，请重新登录。')
 				}else if(code === 403){
 					if (config.showErrorMsg !== false) toast(msg)
