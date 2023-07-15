@@ -23,7 +23,10 @@
 				<view class="name_title">好友下单 <text style="color: #e9838a;margin-left: 30rpx;">+30元</text></view>
 				<view class="name_detail">好友下单，Ta得30元，你得30元</view>
 			</view>
-			<button open-type="share">
+			<button open-type="share" v-if="isShare">
+			<view class="button">邀请</view>
+			</button>
+			<button  v-else  @click="$util.toast('未购买不能分享，请先购买')">
 			<view class="button">邀请</view>
 			</button>
 		</view>
@@ -51,25 +54,28 @@
 </template>
 
 <script>
+	import { is_share } from '@/api/index.js'
 	import { mapGetters } from  'vuex'
 	export default {
 		data() {
 			return {
-				
+				isShare:false
 			}
 		},
 		onShareAppMessage(res) {
 		    return {
-		      title: '商美A客',
-		      path: `/pages/index/index?id=${1}`,
-		      // imageUrl: '/static/imgs/mylogo.png'
+		      title: '美商A客系统',
+		      path: `/pages/index/index?product_id=${this.proid}&uid=${this.uid}`,
 		    }
 		},
 		onLoad() {
 
 		},
+		onShow() {
+			this.getisShare()
+		},
 		computed: {
-			...mapGetters(['userInfo','proid']),
+			...mapGetters(['userInfo','proid','uid']),
 			saveMoney(){
 				let num = parseFloat(this.userInfo.withdrawal_amount) - parseFloat(this.userInfo.money)
 				if(Math.sign(num)== -1){
@@ -86,8 +92,21 @@
 				})
 			},
 			goshare(){
+				if(!this.isShare){
+					this.$util.toast('未购买不能分享，请先购买')
+					return false
+				}
 				uni.navigateTo({
 					url:'/my/shareFriend'
+				})
+			},
+			getisShare(){
+				let params={
+					uid:  this.uid,
+					pid:  this.proid
+				}
+				is_share(params).then(res=>{
+					this.isShare = res.data
 				})
 			}
 		}
@@ -102,6 +121,7 @@
 	button {
 	    margin: unset;
 	    padding: unset;
+		background-color: transparent;
 	}
 	button:after {
 		border: unset;

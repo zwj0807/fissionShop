@@ -1,7 +1,7 @@
 <template>
 	<view>
 		<view class="shop_box" @click="goIndex(item)" v-for="(item,index) in list" :key="item.id">
-			<image class="img" :src="item.image.split(',')[0] ? item.image.split(',')[0] : '/static/touxinag_demo.png'"></image>
+			<image class="img" :src="item.image[0] ? item.image[0] : '/static/touxinag_demo.png'"></image>
 			<view class="right_box" style="">
 				<view class="info_box">
 					<view class="title">{{item.name}}</view>
@@ -24,7 +24,7 @@
 			}
 		},
 		computed:{
-			...mapGetters(['userInfo','proid']),
+			...mapGetters(['userInfo','proid','uid']),
 		},
 		onShow() {
 			this.getList()
@@ -32,7 +32,7 @@
 		methods:{
 			goIndex(item){
 				uni.switchTab({
-					url:`/pages/index/index?id=${item.id}`
+					url:`/pages/index/index?product_id=${item.product_id}&uid=${item.uid}`
 				})
 			},
 			getList(){

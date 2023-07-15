@@ -4,7 +4,7 @@
 			<view class="title">提现金额</view>
 			<view class="num_imput"><u-input v-model="withdrawNum" placeholder="请输入提现金额" type="number" ></u-input></view>
 			<view style="display: flex;">
-				<view class="allow_num">(可提现金额{{userInfo.money}}元,满{{userInfo.withdrawal_amount}}元可提现)</view>
+				<view class="allow_num">(账户金额{{userInfo.money}}元,满{{ parseFloat(userInfo.withdrawal_amount) +10}}元可提现{{userInfo.withdrawal_amount}}元)</view>
 				<view class="all_text" @click="withdrawAll">全部提现</view>
 			</view>
 			<view class="button">
@@ -56,6 +56,9 @@
 			},
 			withdrawAll(){
 				this.withdrawNum = this.userInfo.money
+				// if(parseFloat(this.withdrawNum) > 400){
+				// 	this.withdrawNum = this.withdrawNum - 10
+				// }
 			},
 			withdrawRecord(){
 				uni.navigateTo({

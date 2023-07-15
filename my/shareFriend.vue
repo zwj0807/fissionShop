@@ -12,7 +12,7 @@
 			<view class="button" @click="copyExpressNo(bannerText)">点击复制</view>
 		</view>
 		<view class="copy_text">
-			{{bannerText}}
+			{{proInfo.introduce ? proInfo.introduce  : bannerText}}
 		</view>
 	</view>
 </template>
@@ -24,7 +24,7 @@ import { mapGetters } from  'vuex'
 		
 		data(){
 			return{
-				bannerText:'会员日-送福利，送兰蔻粉水-享王牌项目 领取万元红包-送完为止，抢到就是赚到——不容错过！', //复制活动文字
+				bannerText:'【活动倒计时】最后一天！数量有限，先到先得,扫码立即参与活动！', //复制活动文字
 				posterImg:'',//最后生成的海报图片
 				pixelRatio:3,//屏幕像数密度
 				inviteQR:'',//动态二维码
@@ -49,7 +49,8 @@ import { mapGetters } from  'vuex'
 			getProDetail(){
 				product_details({id:this.proid}).then(res=>{
 					this.proInfo=res.data
-					this.proInfo.image=this.proInfo.image.split(',')
+					this.proInfo.image = this.proInfo.image.split(',')
+					this.proInfo.introduce ? this.proInfo.introduce  : this.bannerText
 					this.shareing()
 				})
 			},
@@ -103,7 +104,7 @@ import { mapGetters } from  'vuex'
 			                    });
 			                },
 			                complete(res) {
-			                    console.log(res);
+			                    
 			                }
 			            });
 			        }
@@ -118,7 +119,6 @@ import { mapGetters } from  'vuex'
 							/* 打开设置的API*/
 							uni.openSetting({
 								success(res) {
-									console.log(res.authSetting);
 								}
 							});
 						} else if (res.cancel) {
@@ -131,7 +131,6 @@ import { mapGetters } from  'vuex'
 										uni.openSetting({
 											success(res) {
 												/* 授权成功 */
-												console.log(res.authSetting);
 											}
 										});
 									} else if (res.cancel) {
@@ -153,17 +152,19 @@ import { mapGetters } from  'vuex'
 			        //这里参数是前端和后端商议好，生成二维码需要前端传那些对应的值，这里我传了当前页面的路径和邀请码及当前页面的参数
 					let params={
 						path:`page/index/index`,
-						product_id:1,
+						product_id:this.proid,
 					}
 					//去后端请求动态二维码
 
 					poster(params).then(res=>{
-						if(res.code === 200){
+						if(res.code == 200){
 							this.inviteQR = res.data
 							this.createPoster();
 						}
 						
 					})
+					// this.inviteQR = 'http://192.168.1.14:802/uploads/20230710/bbd3a86e74a6c61ae3fdee59a1bb9126.png'
+					// this.createPoster();
 			    //#endif
 			},
 			
@@ -191,7 +192,7 @@ import { mapGetters } from  'vuex'
 								let  bannerTextX = 5 * _this.pixelRatio
 								
 								let bannerTextY = bannerY + bannerH + 18 * _this.pixelRatio   //这里的y轴起始值是顶上的距离还要特意加上文字的行高
-								let chr = _this.bannerText.split("");//这个方法是将一个字符串分割成字符串数组
+								let chr = _this.proInfo.introduce.split("");//这个方法是将一个字符串分割成字符串数组
 								let temp = "";
 								let row = [];
 								ctx.setFontSize( 30 / _this.pixelRatio)
@@ -241,12 +242,12 @@ import { mapGetters } from  'vuex'
 										// //画提示文字
 										const tiptextX = img_x + img_w_y + 20
 										const tiptext1Y = img_y + 40
-										const tiptext1 = '商美A客系统'
+										const tiptext1 = '美商A客系统'
 										ctx.setFontSize( 16 * _this.pixelRatio)
 										ctx.setFillStyle("#121212")
 										ctx.fillText(tiptext1, tiptextX, tiptext1Y);
 										
-										const tiptext2 = '(保存图片分享朋友圈)'
+										const tiptext2 = '(扫码立即参与活动)'
 										const tiptextX_2 = tiptextX
 										const tiptext1Y_2 = tiptext1Y + 40
 										ctx.setFontSize( 10 * _this.pixelRatio)

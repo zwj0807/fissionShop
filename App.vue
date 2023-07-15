@@ -1,14 +1,17 @@
 <script>
+	import {
+		getSystemInfo
+	} from '@/utils/common.js'
 	export default {
 		onLaunch: function(options) {
-			console.log('App Launch',options.query)
-			
+			console.log('App Launch > options',options.query)
+			getSystemInfo()
 		},
 		onShow: function() {
-			console.log('App Show')
+			
 		},
 		onHide: function() {
-			console.log('App Hide')
+			
 		},
 		methods:{
 			

@@ -39,8 +39,8 @@
 				<view class="icon"><u-icon name="red-packet-fill" size="40" color="#efa492"></u-icon></view>
 				<view class="text">给2个朋友送红包可立减{{parseFloat(user.refund_amount) * 2}}</view>
 				
-				<button class="give"  open-type="share"><view class="give" style="right: 0;">送红包</view></button>
-				
+				<button v-if="isShare" class="give"  open-type="share"><view class="give" style="right: 0;">送红包</view></button>
+				<button v-else class="give" @click="$util.toast('未购买不能分享，请先购买')"><view class="give" style="right: 0;">送红包</view></button>
 			</view>
 			<view class="box_three">
 				<view class="goods_title">{{proInfo.name}}</view>
@@ -61,9 +61,8 @@
 		<view class="friends_box">
 			<view class="friends_line_one">
 				<view class="line_one_text"><text style="font-size: 24rpx; color: #e27e6b;">{{allUser.length}}</text>人正在给朋友发红包</view>
-				<button open-type="share">
-				<view class="line_one_share">我也要送</view>
-				</button>
+				<button v-if="isShare" open-type="share"><view class="line_one_share">我也要送</view></button>
+				<button v-else  @click="$util.toast('未购买不能分享，请先购买')"><view class="line_one_share">我也要送</view></button>
 			</view>
 			<view class="head_box">
 				<view class="head_item_box" v-for="(item,index) in allUser" :key="item.id">
@@ -114,16 +113,22 @@
 				<view class="tabar_tips">首次下单返<text style="color: #ec6238;">{{user.refund_amount}}</text>元</view>
 			</view>
 		</view>
-		<button open-type="share">
+		<button open-type="share" v-if="isShare">
+			<view class="right_share" >
+				<view class="box"><u-icon name="share-square" size="40" color="#fff"></u-icon></view>
+				<view class="txt">分享</view>
+			</view>
+		</button>
+		<button  v-else  @click="$util.toast('未购买不能分享，请先购买')">
 			<view class="right_share" >
 				<view class="box"><u-icon name="share-square" size="40" color="#fff"></u-icon></view>
 				<view class="txt">分享</view>
 			</view>
 		</button>
 
-		<view class="right_service">
+		<view class="right_service" @click="callPhone(shop.tel)">
 			<view class="box"><u-icon name="kefu-ermai" size="40" color="#fff"></u-icon></view>
-			<view class="txt" @click="callPhone(shop.tel)">客服</view>
+			<view class="txt">客服</view>
 		</view>
 		<!-- 大转盘 -->
 		<view>
@@ -157,6 +162,7 @@
 					<view class="submit_button" @click="adopt">
 						领取
 					</view>
+					<view style="height: 1rpx;"></view>
 				</view>
 			</u-popup>
 		</view>
@@ -166,7 +172,7 @@
 <script>
 	import LuckyWheel from '@lucky-canvas/uni/lucky-wheel' // 大转盘
 	import { getToken } from '@/utils/auth'
-	import { product_details,current_user,activity_details,activity_smoke } from '@/api/index.js'
+	import { product_details,current_user,activity_details,activity_smoke,is_share } from '@/api/index.js'
 	import { mapGetters } from  'vuex'
 	export default {
 		components:{
@@ -195,39 +201,74 @@
 					shop:{}, //商铺信息
 					activityInfo:{},//大转盘信息
 					smokeInfo:{}, // 中奖信息
+					isShare:false,
 			}
 		},
 		onLoad(options) {
+			
 			let token = getToken()
-			console.log('来自庄庄的分享参数',options,token)
-			if(!token){
+			console.log('分享参数',options)
+			
+			//好友分享过来的 或者 其他页面跳转过来的
+			if(options.product_id){
+				this.$store.commit('SET_PROID',options.product_id)
+			}
+			if(options.uid){
+				this.$store.commit('SET_UID',options.uid)
+			}
+			
+			//二维码分享过来的
+			if(options.scene != undefined){
+				console.log( "options.scene",decodeURIComponent(options.scene))
+		
+			    const scene = decodeURIComponent(options.scene) // 获取到的是编码后的，需要解码，然后截取
+		
+			    let product_id = scene.substr(0,scene.indexOf('&'))
+		
+			    let uid = scene.substr(scene.indexOf('&') + 1)
+		
+			    let productId = product_id.substr(product_id.indexOf('=') + 1)
+		
+			    let uId = uid.substr(uid.indexOf('=') + 1)
+				
+				this.$store.commit('SET_PROID',productId)
+				this.$store.commit('SET_UID',uId)
+			}
+			
+			if(!token){//无登录状态跳转登录页
 				uni.reLaunch({
-					url:'/pages/login'
+					url:`/pages/login?state=200`
 				})
 			}
-			// options.id=1  
-			if(options){
-				this.$store.commit('SET_PROID',options.id)
-				console.log('pp',this.proid)
-			}
+			
 		},
 		onShareAppMessage(res) {
 		    return {
-		      title: '商美A客户',
-		      path: `/pages/index/index?id=${1}`,
+		      title: '美商A客系统',
+		      path: `/pages/index/index?product_id=${this.proid}&uid=${this.uid}`,
 		    }
 		},
+		onPullDownRefresh() {
+
+			this.getproductDetails()
+			this.getActivity()
+			this.getUserInfo()
+
+			setTimeout(function () {
+				uni.stopPullDownRefresh()
+			}, 500)
+		},
 		onShow() {
-			console.log('onshow')
 			uni.hideTabBar()
 			this.getproductDetails()
 			this.getActivity()
+			this.getUserInfo()
 		},
 		onHide() {
 			uni.showTabBar()
 		},
 		computed: {
-			...mapGetters(['userInfo','proid']),
+			...mapGetters(['userInfo','proid','uid']),
 		},
 		methods: {
 			goWithdraw(num){
@@ -275,9 +316,9 @@
 					url:'/pages/share/index'
 				})
 			},
+
 			callPhone(item){
 				let phone = item; // 需要拨打的电话号码
-				console.log('拨打电话', phone)
 				const res = uni.getSystemInfoSync();
 				// ios系统默认有个模态框
 				if (res.platform == 'ios') {
@@ -295,7 +336,6 @@
 					uni.showActionSheet({
 						itemList: [phone, '呼叫'],
 						success: function(res) {
-							console.log(res);
 							if (res.tapIndex == 1) {
 								uni.makePhoneCall({
 									phoneNumber: phone,
@@ -333,20 +373,23 @@
 			},
 			getproductDetails(){
 				let params={
-					id:this.proid
+					id:this.proid,
+					myid:this.uid
 				}
 				product_details(params).then(res=>{
 					this.proInfo=res.data
 					this.proInfo.image=this.proInfo.image.split(',')
 					let { allUser, user, is_turntable, shop, service }=this.proInfo
 					this.user=user
+					this.$store.commit('SET_PROID',this.proInfo.id)
+					this.$store.commit('SET_UID',this.user.id)
 					this.allUser=allUser
 					this.isTurntable=is_turntable
 					this.shop=shop
-					this.$store.commit('SET_USERINFO', this.user)
 					if(this.proInfo.limited_status){
 						this.down()
 					}
+					this.getisShare()
 					
 				})
 			},
@@ -380,6 +423,15 @@
 				current_user().then(res=>{
 					this.user=res.data
 					this.$store.commit('SET_USERINFO', this.user)
+				})
+			},
+			getisShare(){
+				let params={
+					uid:  this.user.uid,
+					pid:  this.proInfo.id
+				}
+				is_share(params).then(res=>{
+					this.isShare = res.data
 				})
 			}
 		}
@@ -932,7 +984,7 @@
 		background-color: #ff2f66;
 		border-radius: 90rpx;
 		font-weight: 600;
-		margin: 0 auto;
+		margin: 0 auto 50rpx auto;
 	}
 }
 .popupShow {

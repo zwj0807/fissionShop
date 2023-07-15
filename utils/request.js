@@ -10,7 +10,7 @@ import {
 
 let timeout = 30000
 const baseUrl = config.baseUrl
-
+console.log('请求地址',config.baseUrl)
 const request = config => {
 	// 是否需要设置 token
 	const isToken = (config.headers || {}).isToken === false
@@ -19,7 +19,7 @@ const request = config => {
 		// config.header['Authorization'] = 'Bearer ' + getToken()   
 		 config.header['Authorization'] = getToken()
 	}
-	config.header['Authorization'] = 'd774dc00-01ca-4b85-bf57-9393282b9597'
+	// config.header['Authorization'] = 'd774dc00-01ca-4b85-bf57-9393282b9597'
 	// get请求映射params参数
 	if (config.params) {
 		let url = config.url + '?' + tansParams(config.params)
@@ -35,28 +35,35 @@ const request = config => {
 				header: config.header,
 				dataType: 'json'
 			}).then(response => {
+				
 				let {data,errMsg} = response
 				const code = data.code || 200
 				const msg = errorCode[code] || data.msg || errorCode['default']
-				if (code === 401) {
-					showConfirm('登录状态已过期，请重新登录').then(res => {
-						if (res.confirm) {
-								uni.reLaunch({
-									url: '/pages/login'
-								})
-						}
+				if (code == 401) {
+					uni.reLaunch({
+						url: '/pages/login?state=401'
 					})
-					reject('无效的会话，或者会话已过期，请重新登录。')
-				}else if(code === 403){
+					setTimeout(()=>{
+						toast('账号未登录或登录状态已过期，请重新登录')
+					},1000)
+					// showConfirm('登录状态已过期，请重新登录').then(res => {
+					// 	if (res.confirm) {
+					// 			uni.reLaunch({
+					// 				url: '/pages/login?state=401'
+					// 			})
+					// 	}
+					// })
+					// reject('无效的会话，或者会话已过期，请重新登录。')
+				}else if(code == 403){
 					if (config.showErrorMsg !== false) toast(msg)
 					reject(code)
-				}else if(code === 404){
+				}else if(code == 404){
 					if (config.showErrorMsg !== false) toast(msg)
 					reject(code)
-				}else if (code === 500) {
+				}else if (code == 500) {
 					if (config.showErrorMsg !== false) toast(msg)
 					reject(code)
-				} else if (code !== 200) {
+				} else if(code !== 200){
 					if (config.showErrorMsg !== false) toast(msg)
 					reject(code)
 				}

@@ -136,3 +136,19 @@ export function getuserphonenumber(data) {
 		data: data
 	})
 }
+//是否可以分享
+export function is_share(data) {
+	return request({
+		url: `/index/is_share`,
+		method: 'post',
+		data: data
+	})
+}
+//传送头像昵称
+export function uploadImgName(data) {
+	return request({
+		url: `/user/setavatarandnickname`,
+		method: 'post',
+		data: data
+	})
+}

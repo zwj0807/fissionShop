@@ -50,7 +50,7 @@
 					<view class="money_box">
 						{{current.total_amount}}元
 						<view class="money_icon">
-							<u-icon name="rmb-circle" color="#f7d458" size="50"></u-icon>
+							<u-icon name="rmb-circle-fill" color="#f7d458" size="50"></u-icon>
 						</view>
 					</view>
 				</view>
@@ -65,7 +65,7 @@
 						<view class="money_box">
 							{{item.total_amount}}元
 							<view class="money_icon">
-								<u-icon name="rmb-circle" color="#f7d458" size="50"></u-icon>
+								<u-icon name="rmb-circle-fill" color="#f7d458" size="50"></u-icon>
 							</view>
 						</view>
 					</view>
@@ -125,6 +125,12 @@
 		onShow() {
 			this.getRedList()
 		},
+		onPullDownRefresh() {
+			this.getRedList()
+			setTimeout(function () {
+				uni.stopPullDownRefresh()
+			}, 500)
+		},
 		computed:{
 			...mapGetters(['userInfo','proid']),
 			percentage(){
@@ -162,7 +168,6 @@
 					uni.showActionSheet({
 						itemList: [phone, '呼叫'],
 						success: function(res) {
-							console.log(res);
 							if (res.tapIndex == 1) {
 								uni.makePhoneCall({
 									phoneNumber: phone,

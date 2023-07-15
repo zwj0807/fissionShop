@@ -144,6 +144,7 @@ export const getSystemInfo = () => {
 	/****************** 所有平台共有的系统信息 ********************/
 	// 设备系统信息
 	let systemInfomations = uni.getSystemInfoSync()
+
 	// 机型适配比例系数
 	let scaleFactor = 750 / systemInfomations.windowWidth
 	// 当前机型-屏幕高度

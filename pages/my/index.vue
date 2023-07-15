@@ -113,6 +113,12 @@ import { mapGetters } from  'vuex'
 		onShow() {
 			this.getproductDetails()
 		},
+		onPullDownRefresh() {
+			this.getproductDetails()
+			setTimeout(function () {
+				uni.stopPullDownRefresh()
+			}, 500)
+		},
 		computed:{
 			...mapGetters(['userInfo','proid']),
 		},

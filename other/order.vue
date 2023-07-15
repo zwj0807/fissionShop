@@ -35,14 +35,14 @@
 			</view>
 			<view style="margin-right: 32rpx;"><u-radio-group  v-model="value"><u-radio size="40" iconSize="40" name="1" shape="circle" ></u-radio></u-radio-group></view>
 		</view>
-		<view class="lable_box">购买数量</view>
+<!-- 		<view class="lable_box">购买数量</view>
 		<view class="buy_num">
 			<view class="buy_num_box">
 				<view class="minus" @click="numMinus"><u-icon size="40" name="minus-circle" ></u-icon></view>
-				<view class="input"><u-input v-model.number="buyNum" inputAlign="center" type="number" border="none"></u-input></view>
+				<view class="input"><u-input v-model.number="buyNum" inputAlign="center" type="number" border="none" :disabled="true"></u-input></view>
 				<view class="plus" @click="numPlus"><u-icon size="40" name="plus-circle"></u-icon></view>
 			</view>
-		</view>
+		</view> -->
 		<view class="lable_box">提货手机号</view>
 		<view class="phone_num">
 			<u-input  v-model="buyPhone" placeholder="请输入提货手机号" type="number" border="none"></u-input>
@@ -115,7 +115,6 @@
 					uni.showActionSheet({
 						itemList: [phone, '呼叫'],
 						success: function(res) {
-							console.log(res);
 							if (res.tapIndex == 1) {
 								uni.makePhoneCall({
 									phoneNumber: phone,
@@ -143,7 +142,8 @@
 				let params={
 					id:this.proid,
 					money:this.money,
-					mobile:this.buyPhone
+					mobile:this.buyPhone,
+					unit: this.buyNum
 				}
 				place_order(params).then(res=>{
 					let obj = res.data || {}
@@ -151,18 +151,19 @@
 						wx.requestPayment({
 							timeStamp: obj.timeStamp,  //后端返回的时间戳
 							nonceStr:  obj.nonceStr,   //后端返回的随机字符串
-							package:  obj.packageValue, //后端返回的prepay_id
-							signType: 'MD5', //后端签名算法,根据后端来,后端MD5这里即为MD5
+							package:  obj.package, //后端返回的prepay_id
+							signType: 'MD5', //后端签名算法,根据后端来,后端RSA这里即为RSA
 							paySign:  obj.paySign,  //后端返回的签名
 							success (res) {
 								console.log('用户支付扣款成功', res)
-								this.$util.showConfirm('购买成功').then(res => {
-									setTimeout(()=>{
-										uni.switchTab({
+								// if(res.errMsg=='requestPayment:ok'){
+									// this.$util.toast('购买成功')
+									// setTimeout(()=>{
+										wx.switchTab({
 											url:'/pages/index/index'
 										})
-									},1000)
-								})
+									// },1000)
+								// }
 							},
 							fail (err) { 
 								this.$util.toast('支付失败')
